@@ -1,0 +1,727 @@
+# Flutter + Supabase 그룹웨어 프로젝트 Cursor Rules
+
+## 프로젝트 개요
+이 프로젝트는 Flutter와 Supabase를 사용하는 모바일 그룹웨어 애플리케이션입니다.
+주요 기능: 대시보드, 출퇴근 관리, 할 일 관리, 일정 관리, 프로젝트 관리
+
+## 기술 스택
+- **Frontend**: Flutter 3.0+, Dart 3.0+
+- **Backend**: Supabase (PostgreSQL, Realtime, Auth, Storage, Edge Functions)
+- **상태관리**: Riverpod 2.0
+- **UI**: Material Design 3
+- **로컬 저장소**: Hive
+- **주요 패키지**:
+  - supabase_flutter
+  - flutter_riverpod
+  - go_router
+  - geolocator
+  - flutter_nfc_kit
+  - table_calendar
+  - drag_and_drop_lists
+  - syncfusion_flutter_charts
+  - cached_network_image
+
+## 프로젝트 구조
+```
+lib/
+├── main.dart
+├── app.dart
+├── core/
+│   ├── constants/
+│   │   ├── app_colors.dart      # Color constants
+│   │   ├── app_strings.dart     # String constants
+│   │   └── supabase_config.dart # Supabase configuration
+│   ├── router/
+│   │   └── app_router.dart      # GoRouter configuration
+│   ├── theme/
+│   │   └── app_theme.dart       # Material Theme configuration
+│   └── utils/
+│       ├── validators.dart       # Input validators
+│       └── formatters.dart       # Date, number formatters
+├── features/
+│   ├── auth/
+│   │   ├── data/
+│   │   │   ├── models/
+│   │   │   └── repositories/
+│   │   ├── presentation/
+│   │   │   ├── screens/
+│   │   │   ├── widgets/
+│   │   │   └── providers/
+│   │   └── domain/
+│   ├── dashboard/
+│   ├── attendance/
+│   ├── tasks/
+│   ├── calendar/
+│   └── projects/
+├── shared/
+│   ├── widgets/
+│   │   ├── app_bar.dart
+│   │   ├── bottom_nav.dart
+│   │   └── loading_indicator.dart
+│   └── providers/
+│       └── supabase_provider.dart
+└── services/
+    ├── supabase_service.dart
+    ├── notification_service.dart
+    └── location_service.dart
+```
+
+## 코딩 컨벤션
+
+### 1. 네이밍 규칙
+- **파일명**: snake_case (예: user_profile_screen.dart)
+- **클래스명**: PascalCase (예: UserProfileScreen)
+- **변수/함수**: camelCase (예: getUserData)
+- **상수**: SCREAMING_SNAKE_CASE 또는 camelCase with k prefix (예: kPrimaryColor)
+- **Private 멤버**: underscore prefix (예: _internalMethod)
+
+### 2. 파일 구조 템플릿
+```dart
+// 1. Dart imports
+import 'dart:async';
+
+// 2. Flutter imports
+import 'package:flutter/material.dart';
+
+// 3. Package imports (alphabetical order)
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
+
+// 4. Project imports (relative imports)
+import '../../core/constants/app_colors.dart';
+import '../widgets/custom_button.dart';
+
+// 5. Part files (if any)
+part 'user_profile_screen.g.dart';
+
+// 6. Code
+class UserProfileScreen extends ConsumerStatefulWidget {
+  // ...
+}
+```
+
+### 3. Widget 작성 규칙
+```dart
+// StatelessWidget 예시
+class CustomCard extends StatelessWidget {
+  final String title;
+  final String? subtitle;
+  final VoidCallback? onTap;
+  
+  const CustomCard({
+    super.key,
+    required this.title,
+    this.subtitle,
+    this.onTap,
+  });
+  
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      // implementation
+    );
+  }
+}
+
+// ConsumerWidget 예시 (Riverpod)
+class DashboardScreen extends ConsumerWidget {
+  const DashboardScreen({super.key});
+  
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final dashboardState = ref.watch(dashboardProvider);
+    
+    return Scaffold(
+      // implementation
+    );
+  }
+}
+```
+
+## Supabase 관련 규칙
+
+### 1. Supabase 초기화
+```dart
+// main.dart
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  
+  await Supabase.initialize(
+    url: Env.supabaseUrl,
+    anonKey: Env.supabaseAnonKey,
+  );
+  
+  runApp(
+    const ProviderScope(
+      child: MyApp(),
+    ),
+  );
+}
+```
+
+### 2. Supabase Provider
+```dart
+// shared/providers/supabase_provider.dart
+final supabaseClientProvider = Provider<SupabaseClient>((ref) {
+  return Supabase.instance.client;
+});
+
+final authStateProvider = StreamProvider<AuthState>((ref) {
+  final supabase = ref.watch(supabaseClientProvider);
+  return supabase.auth.onAuthStateChange;
+});
+```
+
+### 3. Repository 패턴
+```dart
+// features/tasks/data/repositories/task_repository.dart
+class TaskRepository {
+  final SupabaseClient _supabase;
+  
+  TaskRepository(this._supabase);
+  
+  // Realtime subscription
+  Stream<List<Task>> watchTasks() {
+    return _supabase
+        .from('tasks')
+        .stream(primaryKey: ['id'])
+        .eq('user_id', _supabase.auth.currentUser!.id)
+        .map((data) => data.map((json) => Task.fromJson(json)).toList());
+  }
+  
+  // CRUD operations
+  Future<void> createTask(Task task) async {
+    try {
+      await _supabase
+          .from('tasks')
+          .insert(task.toJson());
+    } on PostgrestException catch (e) {
+      throw TaskException(e.message);
+    }
+  }
+  
+  // RLS (Row Level Security) 적용
+  Future<List<Task>> getTeamTasks(String teamId) async {
+    final response = await _supabase
+        .from('tasks')
+        .select('''
+          *,
+          assigned_to:users!assigned_to(id, name, avatar_url)
+        ''')
+        .eq('team_id', teamId)
+        .order('created_at', ascending: false);
+    
+    return response.map((json) => Task.fromJson(json)).toList();
+  }
+}
+```
+
+### 4. Edge Functions 호출
+```dart
+// services/attendance_service.dart
+class AttendanceService {
+  final SupabaseClient _supabase;
+  
+  Future<void> checkIn(Position position) async {
+    final response = await _supabase.functions.invoke(
+      'check-attendance',
+      body: {
+        'type': 'check_in',
+        'latitude': position.latitude,
+        'longitude': position.longitude,
+        'timestamp': DateTime.now().toIso8601String(),
+      },
+    );
+    
+    if (response.error != null) {
+      throw AttendanceException(response.error!.message);
+    }
+  }
+}
+```
+
+## UI/UX 구현 가이드
+
+### 1. 색상 시스템
+```dart
+// core/constants/app_colors.dart
+class AppColors {
+  // Primary Colors
+  static const Color primary = Color(0xFF2196F3);
+  static const Color primaryDark = Color(0xFF1976D2);
+  static const Color primaryLight = Color(0xFFE3F2FD);
+  
+  // Semantic Colors
+  static const Color success = Color(0xFF4CAF50);
+  static const Color warning = Color(0xFFFF9800);
+  static const Color error = Color(0xFFF44336);
+  
+  // Neutral Colors
+  static const Color background = Color(0xFFF5F5F5);
+  static const Color surface = Colors.white;
+  static const Color textPrimary = Color(0xFF1A1A1A);
+  static const Color textSecondary = Color(0xFF666666);
+}
+```
+
+### 2. 반응형 디자인
+```dart
+// shared/widgets/responsive_builder.dart
+class ResponsiveBuilder extends StatelessWidget {
+  final Widget mobile;
+  final Widget? tablet;
+  
+  const ResponsiveBuilder({
+    required this.mobile,
+    this.tablet,
+  });
+  
+  @override
+  Widget build(BuildContext context) {
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        if (constraints.maxWidth >= 600 && tablet != null) {
+          return tablet!;
+        }
+        return mobile;
+      },
+    );
+  }
+}
+```
+
+### 3. 공통 위젯 사용
+```dart
+// Bottom Navigation 사용 예시
+class MainScreen extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: IndexedStack(
+        index: currentIndex,
+        children: screens,
+      ),
+      bottomNavigationBar: BottomNavigationBar(
+        type: BottomNavigationBarType.fixed,
+        currentIndex: currentIndex,
+        items: [
+          BottomNavigationBarItem(icon: Icon(Icons.home), label: '홈'),
+          BottomNavigationBarItem(icon: Icon(Icons.check), label: '할 일'),
+          BottomNavigationBarItem(icon: Icon(Icons.calendar_today), label: '일정'),
+          BottomNavigationBarItem(icon: Icon(Icons.analytics), label: '프로젝트'),
+          BottomNavigationBarItem(icon: Icon(Icons.person), label: '더보기'),
+        ],
+      ),
+    );
+  }
+}
+```
+
+## 상태 관리 (Riverpod)
+
+### 1. Provider 작성 규칙
+```dart
+// features/dashboard/presentation/providers/dashboard_provider.dart
+
+// State class
+@freezed
+class DashboardState with _$DashboardState {
+  const factory DashboardState({
+    @Default(false) bool isLoading,
+    @Default([]) List<KpiData> kpis,
+    @Default([]) List<Announcement> announcements,
+    String? error,
+  }) = _DashboardState;
+}
+
+// StateNotifier
+class DashboardNotifier extends StateNotifier<DashboardState> {
+  final DashboardRepository _repository;
+  
+  DashboardNotifier(this._repository) : super(const DashboardState());
+  
+  Future<void> loadDashboard() async {
+    state = state.copyWith(isLoading: true, error: null);
+    
+    try {
+      final kpis = await _repository.getKpis();
+      final announcements = await _repository.getAnnouncements();
+      
+      state = state.copyWith(
+        isLoading: false,
+        kpis: kpis,
+        announcements: announcements,
+      );
+    } catch (e) {
+      state = state.copyWith(
+        isLoading: false,
+        error: e.toString(),
+      );
+    }
+  }
+}
+
+// Provider
+final dashboardProvider = StateNotifierProvider<DashboardNotifier, DashboardState>((ref) {
+  final repository = ref.watch(dashboardRepositoryProvider);
+  return DashboardNotifier(repository);
+});
+
+// Auto-dispose for screen-specific providers
+final taskDetailProvider = StateNotifierProvider.autoDispose
+    .family<TaskDetailNotifier, TaskDetailState, String>((ref, taskId) {
+  return TaskDetailNotifier(taskId);
+});
+```
+
+### 2. Provider 사용 패턴
+```dart
+// Watch: UI가 상태 변화에 반응
+final dashboardState = ref.watch(dashboardProvider);
+
+// Read: 일회성 읽기
+final repository = ref.read(dashboardRepositoryProvider);
+
+// Listen: 부수 효과 처리
+ref.listen(authStateProvider, (previous, next) {
+  if (next.value?.session == null) {
+    context.go('/login');
+  }
+});
+```
+
+## 기능별 구현 가이드
+
+### 1. 출퇴근 관리
+```dart
+// GPS 기반 출퇴근
+class AttendanceScreen extends ConsumerWidget {
+  Future<void> _checkInWithGPS(WidgetRef ref) async {
+    // 1. 권한 확인
+    final permission = await Geolocator.checkPermission();
+    if (permission == LocationPermission.denied) {
+      await Geolocator.requestPermission();
+    }
+    
+    // 2. 현재 위치 획득
+    final position = await Geolocator.getCurrentPosition();
+    
+    // 3. Supabase Edge Function 호출
+    await ref.read(attendanceServiceProvider).checkIn(position);
+  }
+}
+
+// NFC 태그 읽기
+Future<void> _checkInWithNFC() async {
+  try {
+    NFCAvailability availability = await FlutterNfcKit.nfcAvailability;
+    if (availability == NFCAvailability.available) {
+      NFCTag tag = await FlutterNfcKit.poll();
+      // Process tag.id
+    }
+  } catch (e) {
+    // Handle error
+  }
+}
+```
+
+### 2. 실시간 동기화
+```dart
+// Realtime subscription for tasks
+class TaskListScreen extends ConsumerStatefulWidget {
+  @override
+  ConsumerState<TaskListScreen> createState() => _TaskListScreenState();
+}
+
+class _TaskListScreenState extends ConsumerState<TaskListScreen> {
+  StreamSubscription? _subscription;
+  
+  @override
+  void initState() {
+    super.initState();
+    _setupRealtimeSubscription();
+  }
+  
+  void _setupRealtimeSubscription() {
+    final supabase = ref.read(supabaseClientProvider);
+    
+    _subscription = supabase
+        .from('tasks')
+        .stream(primaryKey: ['id'])
+        .listen((data) {
+          ref.read(taskListProvider.notifier).updateTasks(data);
+        });
+  }
+  
+  @override
+  void dispose() {
+    _subscription?.cancel();
+    super.dispose();
+  }
+}
+```
+
+### 3. 오프라인 지원
+```dart
+// Hive를 사용한 오프라인 캐싱
+class OfflineTaskRepository {
+  static const String boxName = 'offline_tasks';
+  
+  Future<void> saveTasksOffline(List<Task> tasks) async {
+    final box = await Hive.openBox<Task>(boxName);
+    await box.clear();
+    await box.addAll(tasks);
+  }
+  
+  Future<List<Task>> getOfflineTasks() async {
+    final box = await Hive.openBox<Task>(boxName);
+    return box.values.toList();
+  }
+  
+  Future<void> syncWithServer() async {
+    final box = await Hive.openBox<PendingAction>('pending_actions');
+    final pendingActions = box.values.toList();
+    
+    for (final action in pendingActions) {
+      try {
+        await _processPendingAction(action);
+        await action.delete();
+      } catch (e) {
+        // Retry later
+      }
+    }
+  }
+}
+```
+
+## 성능 최적화
+
+### 1. 이미지 최적화
+```dart
+// Cached network image 사용
+CachedNetworkImage(
+  imageUrl: user.avatarUrl,
+  placeholder: (context, url) => CircularProgressIndicator(),
+  errorWidget: (context, url, error) => Icon(Icons.person),
+  cacheManager: DefaultCacheManager(),
+  maxHeightDiskCache: 200,
+  maxWidthDiskCache: 200,
+);
+```
+
+### 2. List 최적화
+```dart
+// ListView.builder 사용
+ListView.builder(
+  itemCount: tasks.length,
+  itemBuilder: (context, index) {
+    return TaskCard(task: tasks[index]);
+  },
+  // 성능 향상을 위한 옵션
+  addAutomaticKeepAlives: false,
+  addRepaintBoundaries: true,
+  cacheExtent: 100.0,
+);
+```
+
+### 3. 비동기 처리
+```dart
+// FutureBuilder 사용
+FutureBuilder<List<Project>>(
+  future: ref.watch(projectsProvider.future),
+  builder: (context, snapshot) {
+    if (snapshot.connectionState == ConnectionState.waiting) {
+      return LoadingIndicator();
+    }
+    if (snapshot.hasError) {
+      return ErrorWidget(snapshot.error!);
+    }
+    return ProjectList(projects: snapshot.data!);
+  },
+);
+```
+
+## 보안 규칙
+
+### 1. 환경 변수 관리
+```dart
+// .env 파일 (Git에서 제외)
+SUPABASE_URL=your_supabase_url
+SUPABASE_ANON_KEY=your_anon_key
+
+// env.dart (dart-define으로 생성)
+class Env {
+  static const String supabaseUrl = String.fromEnvironment('SUPABASE_URL');
+  static const String supabaseAnonKey = String.fromEnvironment('SUPABASE_ANON_KEY');
+}
+```
+
+### 2. 입력 검증
+```dart
+// validators.dart
+class Validators {
+  static String? email(String? value) {
+    if (value == null || value.isEmpty) {
+      return '이메일을 입력해주세요';
+    }
+    if (!RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(value)) {
+      return '올바른 이메일 형식이 아닙니다';
+    }
+    return null;
+  }
+  
+  static String? password(String? value) {
+    if (value == null || value.isEmpty) {
+      return '비밀번호를 입력해주세요';
+    }
+    if (value.length < 8) {
+      return '비밀번호는 8자 이상이어야 합니다';
+    }
+    return null;
+  }
+}
+```
+
+### 3. 에러 처리
+```dart
+// 전역 에러 처리
+class ErrorHandler {
+  static String getMessage(dynamic error) {
+    if (error is PostgrestException) {
+      return _handlePostgrestError(error);
+    } else if (error is AuthException) {
+      return _handleAuthError(error);
+    } else if (error is SocketException) {
+      return '네트워크 연결을 확인해주세요';
+    }
+    return '알 수 없는 오류가 발생했습니다';
+  }
+  
+  static void showSnackBar(BuildContext context, dynamic error) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(getMessage(error)),
+        backgroundColor: AppColors.error,
+      ),
+    );
+  }
+}
+```
+
+## 테스팅 가이드
+
+### 1. Widget 테스트
+```dart
+// test/features/auth/login_screen_test.dart
+void main() {
+  testWidgets('로그인 버튼 탭 시 로그인 시도', (tester) async {
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [
+          authRepositoryProvider.overrideWithValue(MockAuthRepository()),
+        ],
+        child: MaterialApp(home: LoginScreen()),
+      ),
+    );
+    
+    await tester.enterText(find.byType(TextField).first, 'test@example.com');
+    await tester.enterText(find.byType(TextField).last, 'password123');
+    await tester.tap(find.text('로그인'));
+    await tester.pump();
+    
+    expect(find.byType(CircularProgressIndicator), findsOneWidget);
+  });
+}
+```
+
+### 2. Provider 테스트
+```dart
+// test/providers/dashboard_provider_test.dart
+void main() {
+  test('대시보드 데이터 로드 성공', () async {
+    final container = ProviderContainer(
+      overrides: [
+        dashboardRepositoryProvider.overrideWithValue(MockDashboardRepository()),
+      ],
+    );
+    
+    await container.read(dashboardProvider.notifier).loadDashboard();
+    
+    final state = container.read(dashboardProvider);
+    expect(state.isLoading, false);
+    expect(state.kpis.isNotEmpty, true);
+  });
+}
+```
+
+## 빌드 및 배포
+
+### 1. 빌드 명령어
+```bash
+# Development
+flutter run --dart-define=SUPABASE_URL=$SUPABASE_URL --dart-define=SUPABASE_ANON_KEY=$SUPABASE_ANON_KEY
+
+# Production build
+flutter build apk --release --dart-define=SUPABASE_URL=$PROD_SUPABASE_URL
+flutter build ios --release --dart-define=SUPABASE_URL=$PROD_SUPABASE_URL
+```
+
+### 2. 플랫폼별 설정
+```yaml
+# android/app/build.gradle
+android {
+    defaultConfig {
+        minSdkVersion 23  // Android 6.0
+        targetSdkVersion 33
+    }
+}
+
+# ios/Runner/Info.plist
+<key>MinimumOSVersion</key>
+<string>12.0</string>
+
+# 권한 설정
+<key>NSLocationWhenInUseUsageDescription</key>
+<string>출퇴근 기록을 위해 위치 정보가 필요합니다</string>
+```
+
+## 자주 발생하는 문제와 해결방법
+
+### 1. Supabase Realtime 연결 문제
+```dart
+// 재연결 로직
+class RealtimeService {
+  void setupReconnection() {
+    _supabase.realtime.onConnectStateChange.listen((state) {
+      if (state == 'DISCONNECTED') {
+        Future.delayed(Duration(seconds: 5), () {
+          _supabase.realtime.connect();
+        });
+      }
+    });
+  }
+}
+```
+
+### 2. 상태 관리 메모리 누수
+```dart
+// autoDispose 사용
+final taskDetailProvider = StateNotifierProvider.autoDispose<TaskDetailNotifier, TaskDetailState>((ref) {
+  // Provider will be disposed when no longer used
+  return TaskDetailNotifier();
+});
+```
+
+### 3. 이미지 로딩 최적화
+```dart
+// Supabase Storage 이미지 변환
+String getOptimizedImageUrl(String originalUrl) {
+  return '$originalUrl?width=400&height=400&resize=cover';
+}
+```
+
+## 추가 리소스
+- [Flutter 공식 문서](https://flutter.dev/docs)
+- [Supabase Flutter 문서](https://supabase.com/docs/guides/getting-started/quickstarts/flutter)
+- [Riverpod 문서](https://riverpod.dev)
+- [Material Design 3](https://m3.material.io)
