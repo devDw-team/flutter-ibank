@@ -22,6 +22,8 @@ class MainScaffold extends StatelessWidget {
         return 2;
       case '/projects':
         return 3;
+      case '/profile':
+        return 4;
       default:
         return 0;
     }
@@ -40,6 +42,9 @@ class MainScaffold extends StatelessWidget {
         break;
       case 3:
         context.go('/projects');
+        break;
+      case 4:
+        context.go('/profile');
         break;
     }
   }
@@ -73,6 +78,11 @@ class MainScaffold extends StatelessWidget {
             icon: Icon(Icons.work_outline),
             selectedIcon: Icon(Icons.work),
             label: AppStrings.projects,
+          ),
+          NavigationDestination(
+            icon: Icon(Icons.person_outline),
+            selectedIcon: Icon(Icons.person),
+            label: AppStrings.more,
           ),
         ],
       ),

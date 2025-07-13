@@ -7,7 +7,7 @@ class AppStrings {
   static const String tasks = '할 일';
   static const String calendar = '일정';
   static const String projects = '프로젝트';
-  static const String more = '더보기';
+  static const String more = '마이';
   
   // Auth
   static const String login = '로그인';
@@ -19,7 +19,7 @@ class AppStrings {
   static const String emailRequired = '이메일을 입력해주세요';
   static const String passwordRequired = '비밀번호를 입력해주세요';
   static const String invalidEmail = '올바른 이메일 형식이 아닙니다';
-  static const String passwordTooShort = '비밀번호는 8자 이상이어야 합니다';
+  static const String passwordTooShort = '비밀번호는 6자 이상이어야 합니다';
   
   // Attendance
   static const String checkIn = '출근';

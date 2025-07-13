@@ -1,19 +1,24 @@
-import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../features/auth/presentation/screens/login_screen.dart';
 import '../../features/auth/presentation/screens/splash_screen.dart';
+import '../../features/auth/presentation/screens/employee_registration_screen.dart';
 import '../../features/dashboard/presentation/screens/dashboard_screen.dart';
 import '../../features/attendance/presentation/screens/attendance_screen.dart';
 import '../../features/tasks/presentation/screens/tasks_screen.dart';
 import '../../features/calendar/presentation/screens/calendar_screen.dart';
 import '../../features/projects/presentation/screens/projects_screen.dart';
+import '../../features/profile/presentation/screens/profile_screen.dart';
+import '../../features/employees/presentation/screens/employee_add_screen.dart';
+import '../../features/employees/presentation/screens/employee_list_screen.dart';
+import '../../features/employees/presentation/providers/employee_permission_provider.dart';
 import '../../shared/widgets/main_scaffold.dart';
 import '../../shared/providers/supabase_provider.dart';
 
 final appRouterProvider = Provider<GoRouter>((ref) {
   final authState = ref.watch(authStateProvider);
+  final isAdmin = ref.watch(isAdminProvider);
 
   return GoRouter(
     initialLocation: '/splash',
@@ -21,12 +26,21 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       final isLoggedIn = authState.value?.session != null;
       final isAuthRoute = state.matchedLocation == '/login' || 
                          state.matchedLocation == '/splash';
+      
+      final isAdminRoute = state.matchedLocation == '/employee-registration' ||
+                          state.matchedLocation == '/employee-add' ||
+                          state.matchedLocation == '/employee-list';
 
       if (!isLoggedIn && !isAuthRoute) {
         return '/login';
       }
       
       if (isLoggedIn && state.matchedLocation == '/login') {
+        return '/';
+      }
+      
+      // Admin route protection
+      if (isAdminRoute && !isAdmin) {
         return '/';
       }
 
@@ -40,6 +54,18 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/login',
         builder: (context, state) => const LoginScreen(),
+      ),
+      GoRoute(
+        path: '/employee-registration',
+        builder: (context, state) => const EmployeeRegistrationScreen(),
+      ),
+      GoRoute(
+        path: '/employee-add',
+        builder: (context, state) => const EmployeeAddScreen(),
+      ),
+      GoRoute(
+        path: '/employee-list',
+        builder: (context, state) => const EmployeeListScreen(),
       ),
       ShellRoute(
         builder: (context, state, child) => MainScaffold(child: child),
@@ -63,6 +89,10 @@ final appRouterProvider = Provider<GoRouter>((ref) {
           GoRoute(
             path: '/projects',
             builder: (context, state) => const ProjectsScreen(),
+          ),
+          GoRoute(
+            path: '/profile',
+            builder: (context, state) => const ProfileScreen(),
           ),
         ],
       ),
