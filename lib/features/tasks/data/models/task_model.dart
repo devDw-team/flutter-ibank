@@ -3,8 +3,19 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 part 'task_model.freezed.dart';
 part 'task_model.g.dart';
 
-enum TaskStatus { pending, inProgress, completed, cancelled }
-enum TaskPriority { low, medium, high, urgent }
+enum TaskStatus { 
+  @JsonValue('pending') pending, 
+  @JsonValue('in_progress') inProgress, 
+  @JsonValue('completed') completed, 
+  @JsonValue('cancelled') cancelled 
+}
+
+enum TaskPriority { 
+  @JsonValue('low') low, 
+  @JsonValue('medium') medium, 
+  @JsonValue('high') high, 
+  @JsonValue('urgent') urgent 
+}
 
 @freezed
 class TaskModel with _$TaskModel {

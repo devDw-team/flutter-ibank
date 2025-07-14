@@ -7,11 +7,13 @@ import '../../features/auth/presentation/screens/employee_registration_screen.da
 import '../../features/dashboard/presentation/screens/dashboard_screen.dart';
 import '../../features/attendance/presentation/screens/attendance_screen.dart';
 import '../../features/tasks/presentation/screens/tasks_screen.dart';
+import '../../features/tasks/presentation/screens/task_add_screen.dart';
 import '../../features/calendar/presentation/screens/calendar_screen.dart';
 import '../../features/projects/presentation/screens/projects_screen.dart';
 import '../../features/profile/presentation/screens/profile_screen.dart';
 import '../../features/employees/presentation/screens/employee_add_screen.dart';
 import '../../features/employees/presentation/screens/employee_list_screen.dart';
+import '../../features/employees/presentation/screens/employee_edit_screen.dart';
 import '../../features/employees/presentation/providers/employee_permission_provider.dart';
 import '../../shared/widgets/main_scaffold.dart';
 import '../../shared/providers/supabase_provider.dart';
@@ -66,6 +68,17 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/employee-list',
         builder: (context, state) => const EmployeeListScreen(),
+      ),
+      GoRoute(
+        path: '/employees/edit/:id',
+        builder: (context, state) {
+          final employeeId = state.pathParameters['id'] ?? '';
+          return EmployeeEditScreen(employeeId: employeeId);
+        },
+      ),
+      GoRoute(
+        path: '/tasks/add',
+        builder: (context, state) => const TaskAddScreen(),
       ),
       ShellRoute(
         builder: (context, state, child) => MainScaffold(child: child),

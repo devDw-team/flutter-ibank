@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../../../core/constants/app_colors.dart';
@@ -214,7 +215,7 @@ class _SearchBar extends ConsumerWidget {
   }
 }
 
-class _ModernEmployeeCard extends StatelessWidget {
+class _ModernEmployeeCard extends ConsumerWidget {
   final UserModel employee;
 
   const _ModernEmployeeCard({
@@ -242,7 +243,9 @@ class _ModernEmployeeCard extends StatelessWidget {
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final currentUserAsync = ref.watch(userDetailsProvider);
+    final currentUser = currentUserAsync.valueOrNull;
     return Container(
       margin: const EdgeInsets.only(bottom: 16),
       decoration: BoxDecoration(
@@ -262,7 +265,21 @@ class _ModernEmployeeCard extends StatelessWidget {
         child: InkWell(
           borderRadius: BorderRadius.circular(16),
           onTap: () {
-            // TODO: Navigate to employee detail
+            // 관리자는 모든 직원 정보 수정 가능
+            // 일반 사용자는 자신의 정보만 수정 가능
+            final isAdmin = currentUser?.role == 'admin';
+            final isOwnProfile = currentUser?.id == employee.id;
+            
+            if (isAdmin || isOwnProfile) {
+              context.push('/employees/edit/${employee.id}');
+            } else {
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(
+                  content: Text('자신의 정보만 수정할 수 있습니다.'),
+                  backgroundColor: Colors.orange,
+                ),
+              );
+            }
           },
           child: Padding(
             padding: const EdgeInsets.all(16),
