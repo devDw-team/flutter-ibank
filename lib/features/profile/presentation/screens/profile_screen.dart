@@ -27,52 +27,100 @@ class ProfileScreen extends ConsumerWidget {
               decoration: BoxDecoration(
                 color: Theme.of(context).primaryColor.withOpacity(0.1),
               ),
-              child: Column(
-                children: [
-                  CircleAvatar(
-                    radius: 50,
-                    backgroundColor: Theme.of(context).primaryColor,
-                    child: Text(
-                      currentUser?.email?.substring(0, 1).toUpperCase() ?? 'U',
-                      style: const TextStyle(
-                        fontSize: 40,
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold,
+              child: userDetailsAsync.when(
+                data: (userDetails) {
+                  return Column(
+                    children: [
+                      // Profile Image
+                      CircleAvatar(
+                        radius: 50,
+                        backgroundColor: Theme.of(context).primaryColor.withOpacity(0.2),
+                        backgroundImage: userDetails?.avatarUrl != null
+                            ? NetworkImage(userDetails!.avatarUrl!)
+                            : null,
+                        child: userDetails?.avatarUrl == null
+                            ? Text(
+                                userDetails?.name?.substring(0, 1).toUpperCase() ??
+                                    userDetails?.email.substring(0, 1).toUpperCase() ?? 
+                                    'U',
+                                style: const TextStyle(
+                                  fontSize: 40,
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              )
+                            : null,
                       ),
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-                  Text(
-                    currentUser?.email ?? '',
-                    style: Theme.of(context).textTheme.titleMedium,
-                  ),
-                  userDetailsAsync.when(
-                    data: (userDetails) {
-                      if (userDetails?.role == 'admin') {
-                        return Padding(
-                          padding: const EdgeInsets.only(top: 4),
-                          child: Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-                            decoration: BoxDecoration(
-                              color: Colors.red.withOpacity(0.1),
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                            child: Text(
-                              '관리자',
-                              style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                                color: Colors.red,
-                                fontWeight: FontWeight.bold,
-                              ),
+                      const SizedBox(height: 16),
+                      
+                      // Greeting Message
+                      Text(
+                        '${userDetails?.name ?? '사용자'} ${userDetails?.position ?? ''}님,',
+                        style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        '좋은 하루 되세요.',
+                        style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                          color: AppColors.textSecondary,
+                        ),
+                      ),
+                      
+                      // Admin Badge
+                      if (userDetails?.role == 'admin') ...[
+                        const SizedBox(height: 12),
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                          decoration: BoxDecoration(
+                            color: Colors.red.withOpacity(0.1),
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: Text(
+                            '관리자',
+                            style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                              color: Colors.red,
+                              fontWeight: FontWeight.bold,
                             ),
                           ),
-                        );
-                      }
-                      return const SizedBox.shrink();
-                    },
-                    loading: () => const SizedBox.shrink(),
-                    error: (_, __) => const SizedBox.shrink(),
-                  ),
-                ],
+                        ),
+                      ],
+                    ],
+                  );
+                },
+                loading: () => Column(
+                  children: [
+                    CircleAvatar(
+                      radius: 50,
+                      backgroundColor: Theme.of(context).primaryColor.withOpacity(0.2),
+                      child: const CircularProgressIndicator(),
+                    ),
+                    const SizedBox(height: 16),
+                    const Text('로딩 중...'),
+                  ],
+                ),
+                error: (_, __) => Column(
+                  children: [
+                    CircleAvatar(
+                      radius: 50,
+                      backgroundColor: Theme.of(context).primaryColor,
+                      child: Text(
+                        currentUser?.email?.substring(0, 1).toUpperCase() ?? 'U',
+                        style: const TextStyle(
+                          fontSize: 40,
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    Text(
+                      currentUser?.email ?? '',
+                      style: Theme.of(context).textTheme.titleMedium,
+                    ),
+                  ],
+                ),
               ),
             ),
             const SizedBox(height: 24),
