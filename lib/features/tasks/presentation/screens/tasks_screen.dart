@@ -6,7 +6,6 @@ import 'package:go_router/go_router.dart';
 import '../../data/models/task_model.dart';
 import '../providers/task_provider.dart';
 import '../widgets/task_card.dart';
-import '../widgets/task_form_dialog.dart';
 import '../widgets/kanban_column.dart';
 
 class TasksScreen extends ConsumerWidget {
@@ -132,7 +131,7 @@ class TasksScreen extends ConsumerWidget {
               return DragAndDropItem(
                 child: TaskCard(
                   task: task,
-                  onTap: () => _showTaskDetail(context, ref, task, taskActions),
+                  onTap: () => context.push('/tasks/detail/${task.id}'),
                   onStatusChanged: (newStatus) async {
                     await taskActions.updateTaskStatus(task.id, newStatus);
                   },
@@ -211,53 +210,6 @@ class TasksScreen extends ConsumerWidget {
     }
   }
 
-  void _showTaskDetail(
-    BuildContext context,
-    WidgetRef ref,
-    TaskModel task,
-    TaskActions taskActions,
-  ) {
-    showDialog(
-      context: context,
-      builder: (context) => TaskFormDialog(
-        task: task,
-        onSave: (updatedTask) async {
-          try {
-            await taskActions.updateTask(updatedTask);
-            if (context.mounted) {
-              Navigator.of(context).pop();
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('할일이 수정되었습니다.')),
-              );
-            }
-          } catch (e) {
-            if (context.mounted) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text('오류: $e')),
-              );
-            }
-          }
-        },
-        onDelete: () async {
-          try {
-            await taskActions.deleteTask(task.id);
-            if (context.mounted) {
-              Navigator.of(context).pop();
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('할일이 삭제되었습니다.')),
-              );
-            }
-          } catch (e) {
-            if (context.mounted) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text('오류: $e')),
-              );
-            }
-          }
-        },
-      ),
-    );
-  }
 
   IconData _getEmptyIcon(TaskStatus status) {
     switch (status) {

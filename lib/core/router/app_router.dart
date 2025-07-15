@@ -8,7 +8,10 @@ import '../../features/dashboard/presentation/screens/dashboard_screen.dart';
 import '../../features/attendance/presentation/screens/attendance_screen.dart';
 import '../../features/tasks/presentation/screens/tasks_screen.dart';
 import '../../features/tasks/presentation/screens/task_add_screen.dart';
+import '../../features/tasks/presentation/screens/task_detail_screen.dart';
 import '../../features/calendar/presentation/screens/calendar_screen.dart';
+import '../../features/calendar/presentation/screens/event_add_screen.dart';
+import '../../features/calendar/presentation/screens/event_detail_screen.dart';
 import '../../features/projects/presentation/screens/projects_screen.dart';
 import '../../features/profile/presentation/screens/profile_screen.dart';
 import '../../features/employees/presentation/screens/employee_add_screen.dart';
@@ -79,6 +82,24 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/tasks/add',
         builder: (context, state) => const TaskAddScreen(),
+      ),
+      GoRoute(
+        path: '/tasks/detail/:id',
+        builder: (context, state) {
+          final taskId = state.pathParameters['id'] ?? '';
+          return TaskDetailScreen(taskId: taskId);
+        },
+      ),
+      GoRoute(
+        path: '/calendar/add',
+        builder: (context, state) => const EventAddScreen(),
+      ),
+      GoRoute(
+        path: '/calendar/detail/:id',
+        builder: (context, state) {
+          final eventId = state.pathParameters['id'] ?? '';
+          return EventDetailScreen(eventId: eventId);
+        },
       ),
       ShellRoute(
         builder: (context, state, child) => MainScaffold(child: child),
