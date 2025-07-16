@@ -1,10 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:intl/intl.dart';
 
 import '../../../../core/constants/app_strings.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../shared/providers/supabase_provider.dart';
+import '../../../tasks/presentation/providers/task_provider.dart';
+import '../../../tasks/data/models/task_model.dart';
+import '../../../calendar/presentation/providers/calendar_provider.dart';
+import '../../../calendar/data/models/event_model.dart';
 
 class DashboardScreen extends ConsumerWidget {
   const DashboardScreen({super.key});
@@ -79,9 +84,9 @@ class DashboardScreen extends ConsumerWidget {
             children: [
               _buildQuickActions(context),
               const SizedBox(height: 24),
-              _buildTodaysSummary(context),
+              _buildTodaysSummary(context, ref),
               const SizedBox(height: 24),
-              _buildRecentTasks(context),
+              _buildRecentTasks(context, ref),
               const SizedBox(height: 24),
               _buildAnnouncements(context),
             ],
@@ -124,13 +129,13 @@ class DashboardScreen extends ConsumerWidget {
                   icon: Icons.add_task,
                   label: '할 일 추가',
                   color: AppColors.primary,
-                  onTap: () => context.go('/tasks'),
+                  onTap: () => context.push('/tasks/add'),
                 ),
                 _QuickActionButton(
                   icon: Icons.event,
                   label: '일정 추가',
                   color: Colors.purple,
-                  onTap: () => context.go('/calendar'),
+                  onTap: () => context.push('/calendar/add'),
                 ),
               ],
             ),
@@ -140,7 +145,30 @@ class DashboardScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildTodaysSummary(BuildContext context) {
+  Widget _buildTodaysSummary(BuildContext context, WidgetRef ref) {
+    final tasksAsync = ref.watch(myTasksProvider);
+    final eventsAsync = ref.watch(dayEventsProvider);
+    
+    // 오늘 완료한 작업 수 계산
+    final completedTasksToday = tasksAsync.when(
+      data: (tasks) => tasks.where((task) {
+        if (task.status != TaskStatus.completed) return false;
+        final today = DateTime.now();
+        return task.updatedAt.year == today.year &&
+               task.updatedAt.month == today.month &&
+               task.updatedAt.day == today.day;
+      }).length,
+      loading: () => 0,
+      error: (_, __) => 0,
+    );
+    
+    // 오늘 예정된 일정 수
+    final todayEventsCount = eventsAsync.when(
+      data: (events) => events.length,
+      loading: () => 0,
+      error: (_, __) => 0,
+    );
+    
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -164,14 +192,14 @@ class DashboardScreen extends ConsumerWidget {
             _SummaryItem(
               icon: Icons.task_alt,
               label: '완료한 작업',
-              value: '0개',
+              value: '$completedTasksToday개',
               color: AppColors.success,
             ),
             const SizedBox(height: 8),
             _SummaryItem(
               icon: Icons.event,
               label: '예정된 일정',
-              value: '0개',
+              value: '$todayEventsCount개',
               color: Colors.orange,
             ),
           ],
@@ -180,7 +208,9 @@ class DashboardScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildRecentTasks(BuildContext context) {
+  Widget _buildRecentTasks(BuildContext context, WidgetRef ref) {
+    final tasksAsync = ref.watch(myTasksProvider);
+    
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -203,11 +233,46 @@ class DashboardScreen extends ConsumerWidget {
               ],
             ),
             const SizedBox(height: 16),
-            Center(
-              child: Text(
-                AppStrings.noData,
-                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  color: AppColors.textSecondary,
+            tasksAsync.when(
+              data: (tasks) {
+                // 진행중이거나 대기중인 작업만 표시 (최근 5개)
+                final recentTasks = tasks
+                    .where((task) => 
+                      task.status == TaskStatus.pending || 
+                      task.status == TaskStatus.inProgress
+                    )
+                    .take(5)
+                    .toList();
+                
+                if (recentTasks.isEmpty) {
+                  return Center(
+                    child: Text(
+                      '진행 중인 할일이 없습니다',
+                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        color: AppColors.textSecondary,
+                      ),
+                    ),
+                  );
+                }
+                
+                return Column(
+                  children: recentTasks.map((task) => 
+                    _TaskListItem(
+                      task: task,
+                      onTap: () => context.push('/tasks/detail/${task.id}'),
+                    ),
+                  ).toList(),
+                );
+              },
+              loading: () => const Center(
+                child: CircularProgressIndicator(),
+              ),
+              error: (error, _) => Center(
+                child: Text(
+                  '오류가 발생했습니다',
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    color: AppColors.error,
+                  ),
                 ),
               ),
             ),
@@ -321,5 +386,135 @@ class _SummaryItem extends StatelessWidget {
         ),
       ],
     );
+  }
+}
+
+class _TaskListItem extends StatelessWidget {
+  final TaskModel task;
+  final VoidCallback onTap;
+
+  const _TaskListItem({
+    required this.task,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.symmetric(vertical: 8.0),
+        child: Row(
+          children: [
+            Container(
+              width: 4,
+              height: 40,
+              decoration: BoxDecoration(
+                color: _getPriorityColor(task.priority),
+                borderRadius: BorderRadius.circular(2),
+              ),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    task.title,
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      fontWeight: FontWeight.w500,
+                    ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  if (task.dueDate != null) ...[
+                    const SizedBox(height: 4),
+                    Row(
+                      children: [
+                        Icon(
+                          Icons.schedule,
+                          size: 14,
+                          color: _getDueDateColor(task.dueDate!),
+                        ),
+                        const SizedBox(width: 4),
+                        Text(
+                          DateFormat('MM/dd').format(task.dueDate!),
+                          style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                            color: _getDueDateColor(task.dueDate!),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ],
+              ),
+            ),
+            Chip(
+              label: Text(
+                _getStatusText(task.status),
+                style: const TextStyle(fontSize: 12),
+              ),
+              backgroundColor: _getStatusColor(task.status).withOpacity(0.2),
+              side: BorderSide.none,
+              padding: const EdgeInsets.symmetric(horizontal: 8),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Color _getPriorityColor(TaskPriority priority) {
+    switch (priority) {
+      case TaskPriority.urgent:
+        return Colors.red;
+      case TaskPriority.high:
+        return Colors.orange;
+      case TaskPriority.medium:
+        return Colors.blue;
+      case TaskPriority.low:
+        return Colors.green;
+    }
+  }
+
+  Color _getStatusColor(TaskStatus status) {
+    switch (status) {
+      case TaskStatus.pending:
+        return Colors.grey;
+      case TaskStatus.inProgress:
+        return Colors.blue;
+      case TaskStatus.completed:
+        return Colors.green;
+      case TaskStatus.cancelled:
+        return Colors.red;
+    }
+  }
+
+  String _getStatusText(TaskStatus status) {
+    switch (status) {
+      case TaskStatus.pending:
+        return '대기';
+      case TaskStatus.inProgress:
+        return '진행중';
+      case TaskStatus.completed:
+        return '완료';
+      case TaskStatus.cancelled:
+        return '취소';
+    }
+  }
+
+  Color _getDueDateColor(DateTime dueDate) {
+    final now = DateTime.now();
+    final difference = dueDate.difference(now).inDays;
+    
+    if (difference < 0) {
+      return Colors.red; // 지난 마감일
+    } else if (difference <= 1) {
+      return Colors.orange; // 1일 이내
+    } else if (difference <= 3) {
+      return Colors.amber; // 3일 이내
+    } else {
+      return Colors.grey; // 여유 있음
+    }
   }
 } 

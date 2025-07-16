@@ -13,6 +13,8 @@ import '../../features/calendar/presentation/screens/calendar_screen.dart';
 import '../../features/calendar/presentation/screens/event_add_screen.dart';
 import '../../features/calendar/presentation/screens/event_detail_screen.dart';
 import '../../features/projects/presentation/screens/projects_screen.dart';
+import '../../features/projects/presentation/screens/project_add_screen.dart';
+import '../../features/projects/presentation/screens/project_detail_screen.dart';
 import '../../features/profile/presentation/screens/profile_screen.dart';
 import '../../features/employees/presentation/screens/employee_add_screen.dart';
 import '../../features/employees/presentation/screens/employee_list_screen.dart';
@@ -99,6 +101,17 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         builder: (context, state) {
           final eventId = state.pathParameters['id'] ?? '';
           return EventDetailScreen(eventId: eventId);
+        },
+      ),
+      GoRoute(
+        path: '/projects/add',
+        builder: (context, state) => const ProjectAddScreen(),
+      ),
+      GoRoute(
+        path: '/projects/detail/:id',
+        builder: (context, state) {
+          final projectId = state.pathParameters['id'] ?? '';
+          return ProjectDetailScreen(projectId: projectId);
         },
       ),
       ShellRoute(
