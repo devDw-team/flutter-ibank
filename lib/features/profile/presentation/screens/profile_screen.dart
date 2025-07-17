@@ -33,6 +33,7 @@ class ProfileScreen extends ConsumerWidget {
                     children: [
                       // Profile Image
                       CircleAvatar(
+                        key: ValueKey(userDetails?.avatarUrl),
                         radius: 50,
                         backgroundColor: Theme.of(context).primaryColor.withOpacity(0.2),
                         backgroundImage: userDetails?.avatarUrl != null
@@ -170,14 +171,14 @@ class ProfileScreen extends ConsumerWidget {
                   icon: Icons.person_outline,
                   title: '프로필 편집',
                   onTap: () {
-                    // TODO: Navigate to profile edit
+                    context.push('/profile/edit');
                   },
                 ),
                 _MenuItem(
                   icon: Icons.lock_outline,
                   title: '비밀번호 변경',
                   onTap: () {
-                    // TODO: Navigate to password change
+                    context.push('/profile/password-change');
                   },
                 ),
               ],

@@ -9,17 +9,15 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../../core/utils/validators.dart';
 import '../../../../shared/providers/supabase_provider.dart';
 
-class EmployeeAddScreen extends ConsumerStatefulWidget {
-  const EmployeeAddScreen({super.key});
+class ProfileEditScreen extends ConsumerStatefulWidget {
+  const ProfileEditScreen({super.key});
 
   @override
-  ConsumerState<EmployeeAddScreen> createState() => _EmployeeAddScreenState();
+  ConsumerState<ProfileEditScreen> createState() => _ProfileEditScreenState();
 }
 
-class _EmployeeAddScreenState extends ConsumerState<EmployeeAddScreen> {
+class _ProfileEditScreenState extends ConsumerState<ProfileEditScreen> {
   final _formKey = GlobalKey<FormState>();
-  final _emailController = TextEditingController();
-  final _passwordController = TextEditingController();
   final _nameController = TextEditingController();
   final _phoneController = TextEditingController();
   final _divisionController = TextEditingController();
@@ -29,13 +27,40 @@ class _EmployeeAddScreenState extends ConsumerState<EmployeeAddScreen> {
   final _joindateController = TextEditingController();
   
   XFile? _imageFile;
+  String? _currentAvatarUrl;
   bool _isLoading = false;
+  bool _isInitialized = false;
   final _picker = ImagePicker();
 
   @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (!_isInitialized) {
+      _loadUserData();
+      _isInitialized = true;
+    }
+  }
+
+  Future<void> _loadUserData() async {
+    final userDetailsAsync = ref.read(userDetailsProvider);
+    userDetailsAsync.whenData((userDetails) {
+      if (userDetails != null) {
+        setState(() {
+          _nameController.text = userDetails.name ?? '';
+          _phoneController.text = userDetails.phone ?? '';
+          _divisionController.text = userDetails.division ?? '';
+          _departmentController.text = userDetails.department ?? '';
+          _positionController.text = userDetails.position ?? '';
+          _birthdayController.text = userDetails.birthday ?? '';
+          _joindateController.text = userDetails.joindate ?? '';
+          _currentAvatarUrl = userDetails.avatarUrl;
+        });
+      }
+    });
+  }
+
+  @override
   void dispose() {
-    _emailController.dispose();
-    _passwordController.dispose();
     _nameController.dispose();
     _phoneController.dispose();
     _divisionController.dispose();
@@ -69,7 +94,7 @@ class _EmployeeAddScreenState extends ConsumerState<EmployeeAddScreen> {
   }
 
   Future<String?> _uploadImage(String userId) async {
-    if (_imageFile == null) return null;
+    if (_imageFile == null) return _currentAvatarUrl;
 
     try {
       final supabase = ref.read(supabaseClientProvider);
@@ -94,11 +119,11 @@ class _EmployeeAddScreenState extends ConsumerState<EmployeeAddScreen> {
       return imageUrl;
     } catch (e) {
       debugPrint('Image upload error: $e');
-      return null;
+      return _currentAvatarUrl;
     }
   }
 
-  Future<void> _register() async {
+  Future<void> _updateProfile() async {
     if (!_formKey.currentState!.validate()) return;
 
     setState(() {
@@ -107,26 +132,18 @@ class _EmployeeAddScreenState extends ConsumerState<EmployeeAddScreen> {
 
     try {
       final supabase = ref.read(supabaseClientProvider);
+      final user = supabase.auth.currentUser;
+      if (user == null) throw Exception('사용자 정보를 찾을 수 없습니다.');
 
-      // 1. Create auth user
-      final AuthResponse authResponse = await supabase.auth.signUp(
-        email: _emailController.text.trim(),
-        password: _passwordController.text,
-      );
-
-      if (authResponse.user == null) {
-        throw Exception('사용자 생성 실패');
-      }
-
-      final userId = authResponse.user!.id;
-
-      // 2. Upload avatar if exists
+      // Upload avatar if changed
       String? avatarUrl;
       if (_imageFile != null) {
-        avatarUrl = await _uploadImage(userId);
+        avatarUrl = await _uploadImage(user.id);
+      } else {
+        avatarUrl = _currentAvatarUrl;
       }
 
-      // 3. Update user profile
+      // Update user profile
       await supabase.from('users').update({
         'name': _nameController.text.trim(),
         'phone': _phoneController.text.trim(),
@@ -136,18 +153,21 @@ class _EmployeeAddScreenState extends ConsumerState<EmployeeAddScreen> {
         'birthday': _birthdayController.text.isEmpty ? null : _birthdayController.text,
         'joindate': _joindateController.text.isEmpty ? null : _joindateController.text,
         'avatar_url': avatarUrl,
-      }).eq('id', userId);
+      }).eq('id', user.id);
 
       if (mounted) {
+        // Refresh the user details provider
+        ref.invalidate(userDetailsProvider);
+        
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('임직원 등록이 완료되었습니다.')),
+          const SnackBar(content: Text('프로필이 업데이트되었습니다.')),
         );
         context.pop();
       }
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('등록 실패: $e')),
+          SnackBar(content: Text('업데이트 실패: $e')),
         );
       }
     } finally {
@@ -174,7 +194,7 @@ class _EmployeeAddScreenState extends ConsumerState<EmployeeAddScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('임직원 등록'),
+        title: const Text('프로필 편집'),
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
@@ -195,8 +215,10 @@ class _EmployeeAddScreenState extends ConsumerState<EmployeeAddScreen> {
                             ? NetworkImage(_imageFile!.path)
                             : FileImage(File(_imageFile!.path)))
                             as ImageProvider
-                        : null,
-                    child: _imageFile == null
+                        : _currentAvatarUrl != null
+                            ? NetworkImage(_currentAvatarUrl!)
+                            : null,
+                    child: (_imageFile == null && _currentAvatarUrl == null)
                         ? const Icon(
                             Icons.camera_alt,
                             size: 40,
@@ -210,37 +232,10 @@ class _EmployeeAddScreenState extends ConsumerState<EmployeeAddScreen> {
               Center(
                 child: TextButton(
                   onPressed: _pickImage,
-                  child: const Text('프로필 사진 선택'),
+                  child: const Text('프로필 사진 변경'),
                 ),
               ),
               const SizedBox(height: 24),
-              
-              // Email
-              TextFormField(
-                controller: _emailController,
-                decoration: const InputDecoration(
-                  labelText: '이메일 *',
-                  border: OutlineInputBorder(),
-                ),
-                keyboardType: TextInputType.emailAddress,
-                validator: Validators.email,
-                enabled: !_isLoading,
-              ),
-              const SizedBox(height: 16),
-
-              // Password
-              TextFormField(
-                controller: _passwordController,
-                decoration: const InputDecoration(
-                  labelText: '비밀번호 *',
-                  border: OutlineInputBorder(),
-                  helperText: '최소 6자 이상',
-                ),
-                obscureText: true,
-                validator: Validators.password,
-                enabled: !_isLoading,
-              ),
-              const SizedBox(height: 16),
 
               // Name
               TextFormField(
@@ -329,7 +324,7 @@ class _EmployeeAddScreenState extends ConsumerState<EmployeeAddScreen> {
 
               // Submit Button
               FilledButton(
-                onPressed: _isLoading ? null : _register,
+                onPressed: _isLoading ? null : _updateProfile,
                 child: _isLoading
                     ? const SizedBox(
                         height: 20,
@@ -339,7 +334,7 @@ class _EmployeeAddScreenState extends ConsumerState<EmployeeAddScreen> {
                           valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
                         ),
                       )
-                    : const Text('등록'),
+                    : const Text('저장'),
               ),
             ],
           ),
@@ -347,4 +342,4 @@ class _EmployeeAddScreenState extends ConsumerState<EmployeeAddScreen> {
       ),
     );
   }
-} 
+}

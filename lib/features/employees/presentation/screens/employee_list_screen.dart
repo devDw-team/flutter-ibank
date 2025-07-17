@@ -311,6 +311,7 @@ class _ModernEmployeeCard extends ConsumerWidget {
                       ? ClipOval(
                           child: Image.network(
                             employee.avatarUrl!,
+                            key: ValueKey(employee.avatarUrl),
                             fit: BoxFit.cover,
                             errorBuilder: (context, error, stackTrace) => _buildAvatarText(context),
                           ),

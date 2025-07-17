@@ -16,6 +16,8 @@ import '../../features/projects/presentation/screens/projects_screen.dart';
 import '../../features/projects/presentation/screens/project_add_screen.dart';
 import '../../features/projects/presentation/screens/project_detail_screen.dart';
 import '../../features/profile/presentation/screens/profile_screen.dart';
+import '../../features/profile/presentation/screens/profile_edit_screen.dart';
+import '../../features/profile/presentation/screens/password_change_screen.dart';
 import '../../features/employees/presentation/screens/employee_add_screen.dart';
 import '../../features/employees/presentation/screens/employee_list_screen.dart';
 import '../../features/employees/presentation/screens/employee_edit_screen.dart';
@@ -113,6 +115,14 @@ final appRouterProvider = Provider<GoRouter>((ref) {
           final projectId = state.pathParameters['id'] ?? '';
           return ProjectDetailScreen(projectId: projectId);
         },
+      ),
+      GoRoute(
+        path: '/profile/edit',
+        builder: (context, state) => const ProfileEditScreen(),
+      ),
+      GoRoute(
+        path: '/profile/password-change',
+        builder: (context, state) => const PasswordChangeScreen(),
       ),
       ShellRoute(
         builder: (context, state, child) => MainScaffold(child: child),

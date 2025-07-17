@@ -11,6 +11,7 @@ import '../../../../core/constants/app_colors.dart';
 import '../../../../core/utils/validators.dart';
 import '../../../../features/auth/data/models/user_model.dart';
 import '../../../../shared/providers/supabase_provider.dart';
+import './employee_list_screen.dart';
 
 // Employee Provider
 final employeeProvider = FutureProvider.family<UserModel?, String>((ref, userId) async {
@@ -124,12 +125,18 @@ class _EmployeeEditScreenState extends ConsumerState<EmployeeEditScreen> {
           .from('avatars')
           .getPublicUrl(filePath);
 
-      // Delete old avatar if exists
-      if (_currentAvatarUrl != null) {
-        final oldPath = _currentAvatarUrl!.split('/').last;
-        await supabase.storage
-            .from('avatars')
-            .remove(['avatars/$oldPath']);
+      // Delete old avatar if exists and is from supabase storage
+      if (_currentAvatarUrl != null && _currentAvatarUrl!.contains('supabase.co/storage')) {
+        final urlParts = _currentAvatarUrl!.split('/');
+        final fileName = urlParts.last;
+        try {
+          await supabase.storage
+              .from('avatars')
+              .remove(['avatars/$fileName']);
+        } catch (e) {
+          // Ignore deletion errors
+          debugPrint('Failed to delete old avatar: $e');
+        }
       }
 
       return imageUrl;
@@ -160,14 +167,18 @@ class _EmployeeEditScreenState extends ConsumerState<EmployeeEditScreen> {
             'division': _divisionController.text.trim(),
             'department': _departmentController.text.trim(),
             'position': _positionController.text.trim(),
-            'birthday': _birthDate?.toIso8601String(),
-            'joindate': _joinDate?.toIso8601String(),
+            'birthday': _birthDateController.text.isEmpty ? null : _birthDateController.text,
+            'joindate': _joinDateController.text.isEmpty ? null : _joinDateController.text,
             'avatar_url': avatarUrl,
             'updated_at': DateTime.now().toIso8601String(),
           })
           .eq('id', widget.employeeId);
 
       if (mounted) {
+        // Invalidate providers to refresh data
+        ref.invalidate(employeeProvider(widget.employeeId));
+        ref.invalidate(employeesListProvider);
+        
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text('임직원 정보가 수정되었습니다.'),
