@@ -24,11 +24,11 @@ class ProjectRepository {
         .from('projects')
         .select('''
           *,
-          users!owner_id (id, name, email, avatar_url)
+          owner:users!projects_owner_id_fkey (id, name, email, avatar_url)
         ''');
 
     return (projectsResponse as List).map((projectData) {
-      final ownerData = projectData['users'] as Map<String, dynamic>?;
+      final ownerData = projectData['owner'] as Map<String, dynamic>?;
       
       return ProjectModel.fromJson({
         ...projectData,
@@ -40,38 +40,52 @@ class ProjectRepository {
 
   // Get project by ID with members
   Future<ProjectModel> getProjectById(String projectId) async {
-    final response = await _supabase
-        .from('projects')
-        .select('''
-          *,
-          users!owner_id (id, name, email, avatar_url),
-          project_members (
+    try {
+      final response = await _supabase
+          .from('projects')
+          .select('''
             *,
-            users!user_id (id, name, email, avatar_url)
-          )
-        ''')
-        .eq('id', projectId)
-        .single();
+            owner:users!projects_owner_id_fkey (id, name, email, avatar_url),
+            project_members (
+              *,
+              user:users!project_members_user_id_fkey (id, name, email, avatar_url)
+            )
+          ''')
+          .eq('id', projectId)
+          .single();
 
-    final ownerData = response['users'] as Map<String, dynamic>?;
-    final membersData = response['project_members'] as List<dynamic>? ?? [];
+      final ownerData = response['owner'] as Map<String, dynamic>?;
+      final membersData = response['project_members'] as List<dynamic>? ?? [];
 
-    final members = membersData.map((memberData) {
-      final userData = memberData['users'] as Map<String, dynamic>?;
-      return ProjectMemberModel.fromJson({
-        ...memberData,
-        'userName': userData?['name'],
-        'userEmail': userData?['email'],
-        'userAvatar': userData?['avatar_url'],
-      });
-    }).toList();
+      final members = membersData.map((memberData) {
+        final userData = memberData['user'] as Map<String, dynamic>?;
+        return ProjectMemberModel.fromJson({
+          ...memberData,
+          'userName': userData?['name'],
+          'userEmail': userData?['email'],
+          'userAvatar': userData?['avatar_url'],
+        });
+      }).toList();
 
-    return ProjectModel.fromJson({
-      ...response,
-      'ownerName': ownerData?['name'],
-      'ownerEmail': ownerData?['email'],
-      'members': members,
-    });
+      // Handle date fields that might come as strings from Supabase
+      final projectJson = {
+        'id': response['id'],
+        'name': response['name'],
+        'description': response['description'],
+        'status': response['status'],
+        'owner_id': response['owner_id'],
+        'start_date': response['start_date'],
+        'end_date': response['end_date'],
+        'created_at': response['created_at'],
+        'updated_at': response['updated_at'],
+        'ownerName': ownerData?['name'],
+        'ownerEmail': ownerData?['email'],
+        'members': members.map((m) => m.toJson()).toList(),
+      };
+      return ProjectModel.fromJson(projectJson);
+    } catch (e) {
+      throw Exception('Failed to get project details: $e');
+    }
   }
 
   // Create a new project
@@ -287,34 +301,13 @@ class ProjectRepository {
     final userId = _supabase.auth.currentUser?.id;
     if (userId == null) throw Stream.error('User not authenticated');
 
-    // Stream projects directly - RLS will handle filtering
+    // Use realtime subscription on projects table
     return _supabase
         .from('projects')
         .stream(primaryKey: ['id'])
-        .asyncMap((data) async {
-          if (data.isEmpty) return <ProjectModel>[];
-          
-          // Get project IDs to fetch owner information
-          final projectIds = data.map((p) => p['id'] as String).toList();
-          
-          // Fetch projects with owner information
-          final projectsWithOwners = await _supabase
-              .from('projects')
-              .select('''
-                *,
-                users!owner_id (id, name, email, avatar_url)
-              ''')
-              .inFilter('id', projectIds);
-          
-          return (projectsWithOwners as List).map((projectData) {
-            final ownerData = projectData['users'] as Map<String, dynamic>?;
-            
-            return ProjectModel.fromJson({
-              ...projectData,
-              'ownerName': ownerData?['name'],
-              'ownerEmail': ownerData?['email'],
-            });
-          }).toList();
+        .asyncMap((List<Map<String, dynamic>> data) async {
+          // For each project, fetch complete data including owner info
+          return await getProjects();
         });
   }
 }

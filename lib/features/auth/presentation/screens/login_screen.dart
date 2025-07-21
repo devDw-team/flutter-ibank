@@ -145,7 +145,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                   const SizedBox(height: 16),
                   TextButton(
                     onPressed: _isLoading ? null : () {
-                      // TODO: Implement forgot password
+                      context.push('/forgot-password');
                     },
                     child: const Text(AppStrings.forgotPassword),
                   ),

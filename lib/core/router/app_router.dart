@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import '../../features/auth/presentation/screens/login_screen.dart';
 import '../../features/auth/presentation/screens/splash_screen.dart';
 import '../../features/auth/presentation/screens/employee_registration_screen.dart';
+import '../../features/auth/presentation/screens/forgot_password_screen.dart';
 import '../../features/dashboard/presentation/screens/dashboard_screen.dart';
 import '../../features/attendance/presentation/screens/attendance_screen.dart';
 import '../../features/tasks/presentation/screens/tasks_screen.dart';
@@ -34,7 +35,8 @@ final appRouterProvider = Provider<GoRouter>((ref) {
     redirect: (context, state) {
       final isLoggedIn = authState.value?.session != null;
       final isAuthRoute = state.matchedLocation == '/login' || 
-                         state.matchedLocation == '/splash';
+                         state.matchedLocation == '/splash' ||
+                         state.matchedLocation == '/forgot-password';
       
       final isAdminRoute = state.matchedLocation == '/employee-registration' ||
                           state.matchedLocation == '/employee-add' ||
@@ -63,6 +65,10 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/login',
         builder: (context, state) => const LoginScreen(),
+      ),
+      GoRoute(
+        path: '/forgot-password',
+        builder: (context, state) => const ForgotPasswordScreen(),
       ),
       GoRoute(
         path: '/employee-registration',

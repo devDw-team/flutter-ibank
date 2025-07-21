@@ -1,6 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
+import '../../../../shared/providers/supabase_provider.dart';
 import '../../../auth/data/models/user_model.dart';
 import '../../data/models/project_model.dart';
 import '../../data/repositories/project_repository.dart';
@@ -81,6 +82,9 @@ class ProjectActions {
         }
       }
       
+      // Refresh projects list
+      _ref.invalidate(projectsStreamProvider);
+      
       return newProject;
     } catch (e) {
       throw Exception('Failed to create project: $e');
@@ -90,6 +94,11 @@ class ProjectActions {
   Future<ProjectModel> updateProject(ProjectModel project) async {
     try {
       final updatedProject = await _repository.updateProject(project);
+      
+      // Refresh projects list and project detail
+      _ref.invalidate(projectsStreamProvider);
+      _ref.invalidate(projectDetailProvider(project.id));
+      
       return updatedProject;
     } catch (e) {
       throw Exception('Failed to update project: $e');
@@ -99,6 +108,9 @@ class ProjectActions {
   Future<void> deleteProject(String projectId) async {
     try {
       await _repository.deleteProject(projectId);
+      
+      // Refresh projects list
+      _ref.invalidate(projectsStreamProvider);
     } catch (e) {
       throw Exception('Failed to delete project: $e');
     }
@@ -191,8 +203,6 @@ final userProjectRoleProvider = Provider.autoDispose.family<ProjectMemberRole?, 
 
 // Current user ID provider (from supabase auth)
 final currentUserIdProvider = Provider<String?>((ref) {
-  final supabase = ref.watch(projectRepositoryProvider);
-  // This would normally come from the supabase auth provider
-  // For now, we'll return null and handle it in the repository
-  return null;
+  final supabase = ref.watch(supabaseClientProvider);
+  return supabase.auth.currentUser?.id;
 });

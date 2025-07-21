@@ -13,6 +13,7 @@ class ProjectsScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final projectsAsync = ref.watch(projectsStreamProvider);
+    final filteredProjects = ref.watch(filteredProjectsProvider);
     final selectedFilter = ref.watch(projectFilterProvider);
     final projectActions = ref.watch(projectActionsProvider);
 
@@ -85,10 +86,6 @@ class ProjectsScreen extends ConsumerWidget {
       ),
       body: projectsAsync.when(
         data: (projects) {
-          final filteredProjects = selectedFilter != null
-              ? projects.where((p) => p.status == selectedFilter).toList()
-              : projects;
-
           if (filteredProjects.isEmpty) {
             return Center(
               child: Column(
