@@ -22,6 +22,7 @@ class TaskModel with _$TaskModel {
   const factory TaskModel({
     required String id,
     @JsonKey(name: 'user_id') required String userId,
+    @JsonKey(name: 'project_id') String? projectId,
     required String title,
     String? description,
     @Default(TaskStatus.pending) TaskStatus status,

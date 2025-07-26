@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:drag_and_drop_lists/drag_and_drop_lists.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../../core/constants/app_colors.dart';
 import '../../data/models/task_model.dart';
 import '../providers/task_provider.dart';
 import '../widgets/task_card.dart';
@@ -17,11 +18,9 @@ class TasksScreen extends ConsumerWidget {
     final taskActions = ref.watch(taskActionsProvider);
     
     return Scaffold(
-      backgroundColor: Colors.grey[50],
       appBar: AppBar(
         title: const Text('할 일 관리'),
         elevation: 0,
-        backgroundColor: Colors.white,
         actions: [
           IconButton(
             icon: const Icon(Icons.refresh),
@@ -55,25 +54,25 @@ class TasksScreen extends ConsumerWidget {
       KanbanColumnConfig(
         status: TaskStatus.pending,
         title: '대기',
-        color: Colors.grey,
+        color: AppColors.textSecondary,
         icon: Icons.schedule,
       ),
       KanbanColumnConfig(
         status: TaskStatus.inProgress,
         title: '진행중',
-        color: Colors.blue,
+        color: AppColors.primary,
         icon: Icons.play_arrow,
       ),
       KanbanColumnConfig(
         status: TaskStatus.completed,
         title: '완료',
-        color: Colors.green,
+        color: AppColors.success,
         icon: Icons.check_circle,
       ),
       KanbanColumnConfig(
         status: TaskStatus.cancelled,
         title: '취소',
-        color: Colors.red,
+        color: AppColors.error,
         icon: Icons.cancel,
       ),
     ];
@@ -100,14 +99,14 @@ class TasksScreen extends ConsumerWidget {
                       Icon(
                         _getEmptyIcon(column.status),
                         size: 48,
-                        color: Colors.grey[400],
+                        color: Theme.of(context).colorScheme.onSurfaceVariant.withValues(alpha: 0.6),
                       ),
                       const SizedBox(height: 12),
                       Text(
                         _getEmptyMessage(column.status),
                         style: TextStyle(
                           fontSize: 14,
-                          color: Colors.grey[600],
+                          color: Theme.of(context).colorScheme.onSurfaceVariant,
                           fontWeight: FontWeight.w500,
                         ),
                         textAlign: TextAlign.center,
@@ -117,7 +116,7 @@ class TasksScreen extends ConsumerWidget {
                         _getEmptySubMessage(column.status),
                         style: TextStyle(
                           fontSize: 12,
-                          color: Colors.grey[500],
+                          color: Theme.of(context).colorScheme.onSurfaceVariant.withValues(alpha: 0.8),
                         ),
                         textAlign: TextAlign.center,
                       ),
@@ -164,20 +163,20 @@ class TasksScreen extends ConsumerWidget {
       listDragHandle: null,
       listPadding: const EdgeInsets.all(8.0),
       itemDragHandle: null,
-      itemDivider: const Divider(height: 1),
+      itemDivider: Divider(height: 1, color: Theme.of(context).dividerColor),
       itemDecorationWhileDragging: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(8),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.1),
+            color: Theme.of(context).shadowColor.withValues(alpha: 0.1),
             blurRadius: 8,
             offset: const Offset(0, 4),
           ),
         ],
       ),
       listInnerDecoration: BoxDecoration(
-        color: Colors.grey[100],
+        color: Theme.of(context).colorScheme.surfaceVariant.withValues(alpha: 0.3),
         borderRadius: BorderRadius.circular(12),
       ),
     );

@@ -73,9 +73,9 @@ class _TaskAddScreenState extends ConsumerState<TaskAddScreen> {
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('할일이 등록되었습니다.'),
-            backgroundColor: Colors.green,
+          SnackBar(
+            content: const Text('할일이 등록되었습니다.'),
+            backgroundColor: Theme.of(context).colorScheme.primary,
           ),
         );
         if (Navigator.of(context).canPop()) {
@@ -89,7 +89,7 @@ class _TaskAddScreenState extends ConsumerState<TaskAddScreen> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('오류가 발생했습니다: $e'),
-            backgroundColor: Colors.red,
+            backgroundColor: Theme.of(context).colorScheme.error,
           ),
         );
       }
@@ -105,11 +105,9 @@ class _TaskAddScreenState extends ConsumerState<TaskAddScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey[50],
       appBar: AppBar(
         title: const Text('새 할일 등록'),
         elevation: 0,
-        backgroundColor: Colors.white,
       ),
       body: SingleChildScrollView(
         child: Padding(
@@ -124,7 +122,7 @@ class _TaskAddScreenState extends ConsumerState<TaskAddScreen> {
                   elevation: 0,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12),
-                    side: BorderSide(color: Colors.grey[300]!),
+                    side: BorderSide(color: Theme.of(context).dividerColor),
                   ),
                   child: Padding(
                     padding: const EdgeInsets.all(16),
@@ -142,10 +140,10 @@ class _TaskAddScreenState extends ConsumerState<TaskAddScreen> {
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
-                            const Text(
+                            Text(
                               ' *',
                               style: TextStyle(
-                                color: Colors.red,
+                                color: Theme.of(context).colorScheme.error,
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
@@ -157,7 +155,7 @@ class _TaskAddScreenState extends ConsumerState<TaskAddScreen> {
                           decoration: InputDecoration(
                             hintText: '할일의 제목을 입력하세요',
                             filled: true,
-                            fillColor: Colors.grey[100],
+                            fillColor: Theme.of(context).colorScheme.surfaceVariant.withValues(alpha: 0.5),
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(8),
                               borderSide: BorderSide.none,
@@ -185,7 +183,7 @@ class _TaskAddScreenState extends ConsumerState<TaskAddScreen> {
                   elevation: 0,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12),
-                    side: BorderSide(color: Colors.grey[300]!),
+                    side: BorderSide(color: Theme.of(context).dividerColor),
                   ),
                   child: Padding(
                     padding: const EdgeInsets.all(16),
@@ -212,7 +210,7 @@ class _TaskAddScreenState extends ConsumerState<TaskAddScreen> {
                           decoration: InputDecoration(
                             hintText: '할일에 대한 상세 설명을 입력하세요',
                             filled: true,
-                            fillColor: Colors.grey[100],
+                            fillColor: Theme.of(context).colorScheme.surfaceVariant.withValues(alpha: 0.5),
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(8),
                               borderSide: BorderSide.none,
@@ -231,7 +229,7 @@ class _TaskAddScreenState extends ConsumerState<TaskAddScreen> {
                   elevation: 0,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12),
-                    side: BorderSide(color: Colors.grey[300]!),
+                    side: BorderSide(color: Theme.of(context).dividerColor),
                   ),
                   child: Padding(
                     padding: const EdgeInsets.all(16),
@@ -255,7 +253,7 @@ class _TaskAddScreenState extends ConsumerState<TaskAddScreen> {
                         const SizedBox(height: 12),
                         Container(
                           decoration: BoxDecoration(
-                            color: Colors.grey[100],
+                            color: Theme.of(context).colorScheme.surfaceVariant.withValues(alpha: 0.5),
                             borderRadius: BorderRadius.circular(8),
                           ),
                           child: Row(
@@ -282,7 +280,7 @@ class _TaskAddScreenState extends ConsumerState<TaskAddScreen> {
                                         Icon(
                                           _getPriorityIcon(priority),
                                           size: 16,
-                                          color: isSelected ? Colors.white : Colors.grey[600],
+                                          color: isSelected ? Theme.of(context).colorScheme.onPrimary : Theme.of(context).colorScheme.onSurfaceVariant,
                                         ),
                                         const SizedBox(width: 4),
                                         Text(
@@ -290,7 +288,7 @@ class _TaskAddScreenState extends ConsumerState<TaskAddScreen> {
                                           style: TextStyle(
                                             fontSize: 14,
                                             fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
-                                            color: isSelected ? Colors.white : Colors.grey[600],
+                                            color: isSelected ? Theme.of(context).colorScheme.onPrimary : Theme.of(context).colorScheme.onSurfaceVariant,
                                           ),
                                         ),
                                       ],
@@ -321,7 +319,7 @@ class _TaskAddScreenState extends ConsumerState<TaskAddScreen> {
                         Container(
                           padding: const EdgeInsets.symmetric(horizontal: 16),
                           decoration: BoxDecoration(
-                            color: Colors.grey[100],
+                            color: Theme.of(context).colorScheme.surfaceVariant.withValues(alpha: 0.5),
                             borderRadius: BorderRadius.circular(8),
                           ),
                           child: DropdownButtonHideUnderline(
@@ -380,14 +378,14 @@ class _TaskAddScreenState extends ConsumerState<TaskAddScreen> {
                               vertical: 12,
                             ),
                             decoration: BoxDecoration(
-                              color: Colors.grey[100],
+                              color: Theme.of(context).colorScheme.surfaceVariant.withValues(alpha: 0.5),
                               borderRadius: BorderRadius.circular(8),
                             ),
                             child: Row(
                               children: [
                                 Icon(
                                   Icons.calendar_month,
-                                  color: Colors.grey[600],
+                                  color: Theme.of(context).colorScheme.onSurfaceVariant,
                                   size: 20,
                                 ),
                                 const SizedBox(width: 12),
@@ -397,8 +395,8 @@ class _TaskAddScreenState extends ConsumerState<TaskAddScreen> {
                                       : '마감일을 선택하세요',
                                   style: TextStyle(
                                     color: _dueDate != null 
-                                        ? Colors.black87 
-                                        : Colors.grey[600],
+                                        ? Theme.of(context).colorScheme.onSurface 
+                                        : Theme.of(context).colorScheme.onSurfaceVariant,
                                   ),
                                 ),
                                 const Spacer(),
@@ -460,7 +458,6 @@ class _TaskAddScreenState extends ConsumerState<TaskAddScreen> {
                                 width: 20,
                                 height: 20,
                                 child: CircularProgressIndicator(
-                                  color: Colors.white,
                                   strokeWidth: 2,
                                 ),
                               )
@@ -481,13 +478,13 @@ class _TaskAddScreenState extends ConsumerState<TaskAddScreen> {
   Color _getPriorityColor(TaskPriority priority) {
     switch (priority) {
       case TaskPriority.low:
-        return Colors.green;
+        return AppColors.success;
       case TaskPriority.medium:
-        return Colors.orange;
+        return AppColors.warning;
       case TaskPriority.high:
-        return Colors.red;
+        return AppColors.error;
       case TaskPriority.urgent:
-        return Colors.purple;
+        return Theme.of(context).colorScheme.secondary;
     }
   }
 
@@ -520,13 +517,13 @@ class _TaskAddScreenState extends ConsumerState<TaskAddScreen> {
   Color _getStatusColor(TaskStatus status) {
     switch (status) {
       case TaskStatus.pending:
-        return Colors.grey;
+        return AppColors.textSecondary;
       case TaskStatus.inProgress:
-        return Colors.blue;
+        return AppColors.primary;
       case TaskStatus.completed:
-        return Colors.green;
+        return AppColors.success;
       case TaskStatus.cancelled:
-        return Colors.red;
+        return AppColors.error;
     }
   }
 

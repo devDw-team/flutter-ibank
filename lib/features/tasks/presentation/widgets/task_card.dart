@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
+import '../../../../core/constants/app_colors.dart';
 import '../../data/models/task_model.dart';
 
 class TaskCard extends StatelessWidget {
@@ -20,10 +21,10 @@ class TaskCard extends StatelessWidget {
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       child: Material(
-        color: Colors.white,
+        color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(12),
         elevation: 2,
-        shadowColor: Colors.black.withOpacity(0.1),
+        shadowColor: Theme.of(context).shadowColor.withValues(alpha: 0.1),
         child: InkWell(
           onTap: onTap,
           borderRadius: BorderRadius.circular(12),
@@ -39,10 +40,10 @@ class TaskCard extends StatelessWidget {
                     Expanded(
                       child: Text(
                         task.title,
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.bold,
-                          color: Colors.black87,
+                          color: Theme.of(context).colorScheme.onSurface,
                         ),
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis,
@@ -60,7 +61,7 @@ class TaskCard extends StatelessWidget {
                     task.description!,
                     style: TextStyle(
                       fontSize: 14,
-                      color: Colors.grey[600],
+                      color: Theme.of(context).colorScheme.onSurfaceVariant,
                       height: 1.3,
                     ),
                     maxLines: 3,
@@ -110,14 +111,14 @@ class TaskCard extends StatelessWidget {
                       Icon(
                         Icons.person_outline,
                         size: 16,
-                        color: Colors.grey[600],
+                        color: Theme.of(context).colorScheme.onSurfaceVariant,
                       ),
                       const SizedBox(width: 4),
                       Text(
                         '담당자 지정됨',
                         style: TextStyle(
                           fontSize: 12,
-                          color: Colors.grey[600],
+                          color: Theme.of(context).colorScheme.onSurfaceVariant,
                         ),
                       ),
                     ],
@@ -137,19 +138,19 @@ class TaskCard extends StatelessWidget {
     
     switch (priority) {
       case TaskPriority.urgent:
-        color = Colors.red;
+        color = AppColors.error;
         text = '긴급';
         break;
       case TaskPriority.high:
-        color = Colors.orange;
+        color = AppColors.warning;
         text = '높음';
         break;
       case TaskPriority.medium:
-        color = Colors.blue;
+        color = AppColors.primary;
         text = '보통';
         break;
       case TaskPriority.low:
-        color = Colors.green;
+        color = AppColors.success;
         text = '낮음';
         break;
     }
@@ -157,10 +158,10 @@ class TaskCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       decoration: BoxDecoration(
-        color: color.withOpacity(0.1),
+        color: color.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(12),
         border: Border.all(
-          color: color.withOpacity(0.3),
+          color: color.withValues(alpha: 0.3),
           width: 1,
         ),
       ),
@@ -181,19 +182,19 @@ class TaskCard extends StatelessWidget {
     
     switch (status) {
       case TaskStatus.pending:
-        color = Colors.grey;
+        color = AppColors.textSecondary;
         icon = Icons.schedule;
         break;
       case TaskStatus.inProgress:
-        color = Colors.blue;
+        color = AppColors.primary;
         icon = Icons.play_arrow;
         break;
       case TaskStatus.completed:
-        color = Colors.green;
+        color = AppColors.success;
         icon = Icons.check_circle;
         break;
       case TaskStatus.cancelled:
-        color = Colors.red;
+        color = AppColors.error;
         icon = Icons.cancel;
         break;
     }
@@ -201,7 +202,7 @@ class TaskCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(4),
       decoration: BoxDecoration(
-        color: color.withOpacity(0.1),
+        color: color.withValues(alpha: 0.1),
         shape: BoxShape.circle,
       ),
       child: Icon(
@@ -217,13 +218,13 @@ class TaskCard extends StatelessWidget {
     final difference = dueDate.difference(now).inDays;
     
     if (difference < 0) {
-      return Colors.red; // 지난 마감일
+      return AppColors.error; // 지난 마감일
     } else if (difference <= 1) {
-      return Colors.orange; // 1일 이내
+      return AppColors.warning; // 1일 이내
     } else if (difference <= 3) {
-      return Colors.amber; // 3일 이내
+      return AppColors.warning; // 3일 이내
     } else {
-      return Colors.grey; // 여유 있음
+      return AppColors.textSecondary; // 여유 있음
     }
   }
 } 

@@ -19,13 +19,13 @@ final calendarViewProvider = StateProvider<CalendarView>((ref) => CalendarView.m
 final focusedDateProvider = StateProvider<DateTime>((ref) => DateTime.now());
 
 // Events stream provider
-final eventsStreamProvider = StreamProvider.autoDispose<List<EventModel>>((ref) {
+final eventsStreamProvider = StreamProvider<List<EventModel>>((ref) {
   final repository = ref.watch(eventRepositoryProvider);
   return repository.streamEvents();
 });
 
 // Events for selected month
-final monthEventsProvider = StreamProvider.autoDispose<List<EventModel>>((ref) {
+final monthEventsProvider = StreamProvider<List<EventModel>>((ref) {
   final repository = ref.watch(eventRepositoryProvider);
   final focusedDate = ref.watch(focusedDateProvider);
   
@@ -36,7 +36,7 @@ final monthEventsProvider = StreamProvider.autoDispose<List<EventModel>>((ref) {
 });
 
 // Events for selected week
-final weekEventsProvider = StreamProvider.autoDispose<List<EventModel>>((ref) {
+final weekEventsProvider = StreamProvider<List<EventModel>>((ref) {
   final repository = ref.watch(eventRepositoryProvider);
   final selectedDate = ref.watch(selectedDateProvider);
   
@@ -80,6 +80,11 @@ class CalendarActions {
   Future<EventModel> createEvent(EventModel event) async {
     try {
       final newEvent = await _repository.createEvent(event);
+      print('Event created: ${newEvent.id}'); // Debug log
+      // Force refresh the stream providers
+      _ref.invalidate(eventsStreamProvider);
+      _ref.invalidate(monthEventsProvider);
+      _ref.invalidate(weekEventsProvider);
       return newEvent;
     } catch (e) {
       throw Exception('Failed to create event: $e');
@@ -89,6 +94,11 @@ class CalendarActions {
   Future<EventModel> updateEvent(EventModel event) async {
     try {
       final updatedEvent = await _repository.updateEvent(event);
+      print('Event updated: ${updatedEvent.id}'); // Debug log
+      // Force refresh the stream providers
+      _ref.invalidate(eventsStreamProvider);
+      _ref.invalidate(monthEventsProvider);
+      _ref.invalidate(weekEventsProvider);
       return updatedEvent;
     } catch (e) {
       throw Exception('Failed to update event: $e');
@@ -98,6 +108,11 @@ class CalendarActions {
   Future<void> deleteEvent(String eventId) async {
     try {
       await _repository.deleteEvent(eventId);
+      print('Event deleted: $eventId'); // Debug log
+      // Force refresh the stream providers
+      _ref.invalidate(eventsStreamProvider);
+      _ref.invalidate(monthEventsProvider);
+      _ref.invalidate(weekEventsProvider);
     } catch (e) {
       throw Exception('Failed to delete event: $e');
     }

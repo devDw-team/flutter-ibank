@@ -56,6 +56,27 @@ final groupedTasksProvider = Provider<Map<TaskStatus, List<TaskModel>>>((ref) {
   );
 });
 
+// Tasks by Project Provider
+final tasksProvider = FutureProvider.family<List<TaskModel>, String>((ref, projectId) async {
+  print('tasksProvider called with projectId: $projectId');
+  
+  if (projectId.isEmpty) {
+    print('tasksProvider: projectId is empty, returning empty list');
+    return [];
+  }
+  
+  try {
+    final repository = ref.watch(taskRepositoryProvider);
+    final tasks = await repository.getTasksByProject(projectId);
+    print('tasksProvider success - found ${tasks.length} tasks');
+    return tasks;
+  } catch (e, stack) {
+    print('tasksProvider error: $e');
+    print('Stack trace: $stack');
+    rethrow;
+  }
+});
+
 // Task Actions Provider
 final taskActionsProvider = Provider<TaskActions>((ref) {
   final repository = ref.watch(taskRepositoryProvider);

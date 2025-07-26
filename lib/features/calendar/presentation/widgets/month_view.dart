@@ -47,7 +47,7 @@ class _MonthViewState extends ConsumerState<MonthView> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Icon(Icons.error_outline, size: 48, color: Colors.red),
+            Icon(Icons.error_outline, size: 48, color: Theme.of(context).colorScheme.error),
             const SizedBox(height: 16),
             Text('오류: $error'),
             const SizedBox(height: 16),
@@ -68,7 +68,7 @@ class _MonthViewState extends ConsumerState<MonthView> {
               elevation: 0,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12),
-                side: BorderSide(color: Colors.grey[300]!),
+                side: BorderSide(color: Theme.of(context).dividerColor),
               ),
               child: TableCalendar<EventModel>(
                 firstDay: DateTime.utc(2020, 1, 1),
@@ -89,7 +89,7 @@ class _MonthViewState extends ConsumerState<MonthView> {
                   leftChevronIcon: const Icon(Icons.chevron_left),
                   rightChevronIcon: const Icon(Icons.chevron_right),
                   decoration: BoxDecoration(
-                    color: Colors.white,
+                    color: Theme.of(context).colorScheme.surface,
                     borderRadius: const BorderRadius.vertical(
                       top: Radius.circular(12),
                     ),
@@ -97,13 +97,13 @@ class _MonthViewState extends ConsumerState<MonthView> {
                 ),
                 calendarStyle: CalendarStyle(
                   outsideDaysVisible: false,
-                  weekendTextStyle: const TextStyle(color: Colors.red),
+                  weekendTextStyle: TextStyle(color: Theme.of(context).colorScheme.error),
                   selectedDecoration: BoxDecoration(
                     color: AppColors.primary,
                     shape: BoxShape.circle,
                   ),
                   todayDecoration: BoxDecoration(
-                    color: AppColors.primary.withOpacity(0.3),
+                    color: AppColors.primary.withValues(alpha: 0.3),
                     shape: BoxShape.circle,
                   ),
                   markerDecoration: BoxDecoration(
@@ -129,7 +129,7 @@ class _MonthViewState extends ConsumerState<MonthView> {
                             width: 6,
                             decoration: BoxDecoration(
                               shape: BoxShape.circle,
-                              color: _getEventColor(event.eventType),
+                              color: _getEventColor(context, event.eventType),
                             ),
                           );
                         }).toList(),
@@ -165,14 +165,14 @@ class _MonthViewState extends ConsumerState<MonthView> {
                           Icon(
                             Icons.event_busy,
                             size: 48,
-                            color: Colors.grey[400],
+                            color: Theme.of(context).colorScheme.onSurfaceVariant.withValues(alpha: 0.6),
                           ),
                           const SizedBox(height: 16),
                           Text(
                             '선택한 날짜에 일정이 없습니다',
                             style: TextStyle(
                               fontSize: 16,
-                              color: Colors.grey[600],
+                              color: Theme.of(context).colorScheme.onSurfaceVariant,
                             ),
                           ),
                         ],
@@ -190,7 +190,7 @@ class _MonthViewState extends ConsumerState<MonthView> {
                         elevation: 0,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(8),
-                          side: BorderSide(color: Colors.grey[300]!),
+                          side: BorderSide(color: Theme.of(context).dividerColor),
                         ),
                         child: ListTile(
                           onTap: () {
@@ -199,7 +199,7 @@ class _MonthViewState extends ConsumerState<MonthView> {
                           leading: Container(
                             width: 4,
                             decoration: BoxDecoration(
-                              color: _getEventColor(event.eventType),
+                              color: _getEventColor(context, event.eventType),
                               borderRadius: const BorderRadius.horizontal(
                                 left: Radius.circular(8),
                               ),
@@ -214,16 +214,16 @@ class _MonthViewState extends ConsumerState<MonthView> {
                             children: [
                               Text(
                                 _formatEventTime(event),
-                                style: TextStyle(color: Colors.grey[600]),
+                                style: TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant),
                               ),
                               if (event.location != null && event.location!.isNotEmpty)
                                 Row(
                                   children: [
-                                    Icon(Icons.location_on, size: 14, color: Colors.grey[600]),
+                                    Icon(Icons.location_on, size: 14, color: Theme.of(context).colorScheme.onSurfaceVariant),
                                     const SizedBox(width: 4),
                                     Text(
                                       event.location!,
-                                      style: TextStyle(color: Colors.grey[600]),
+                                      style: TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant),
                                     ),
                                   ],
                                 ),
@@ -234,7 +234,7 @@ class _MonthViewState extends ConsumerState<MonthView> {
                               event.eventTypeText,
                               style: const TextStyle(fontSize: 12),
                             ),
-                            backgroundColor: _getEventColor(event.eventType).withOpacity(0.2),
+                            backgroundColor: _getEventColor(context, event.eventType).withValues(alpha: 0.2),
                             side: BorderSide.none,
                             padding: const EdgeInsets.symmetric(horizontal: 8),
                           ),
@@ -251,16 +251,16 @@ class _MonthViewState extends ConsumerState<MonthView> {
     );
   }
 
-  Color _getEventColor(EventType type) {
+  Color _getEventColor(BuildContext context, EventType type) {
     switch (type) {
       case EventType.personal:
-        return Colors.blue;
+        return AppColors.primary;
       case EventType.team:
-        return Colors.green;
+        return AppColors.success;
       case EventType.company:
-        return Colors.purple;
+        return Theme.of(context).colorScheme.secondary;
       case EventType.meeting:
-        return Colors.orange;
+        return AppColors.warning;
     }
   }
 

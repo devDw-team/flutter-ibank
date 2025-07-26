@@ -48,16 +48,16 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(e.message),
-            backgroundColor: Colors.red,
+            backgroundColor: Theme.of(context).colorScheme.error,
           ),
         );
       }
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('로그인 중 오류가 발생했습니다'),
-            backgroundColor: Colors.red,
+          SnackBar(
+            content: const Text('로그인 중 오류가 발생했습니다'),
+            backgroundColor: Theme.of(context).colorScheme.error,
           ),
         );
       }
@@ -137,7 +137,6 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                             width: 20,
                             child: CircularProgressIndicator(
                               strokeWidth: 2,
-                              valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
                             ),
                           )
                         : const Text(AppStrings.login),

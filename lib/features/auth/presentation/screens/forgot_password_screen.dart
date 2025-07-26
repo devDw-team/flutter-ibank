@@ -37,9 +37,9 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('비밀번호 재설정 이메일을 발송했습니다. 이메일을 확인해주세요.'),
-            backgroundColor: Colors.green,
+          SnackBar(
+            content: const Text('비밀번호 재설정 이메일을 발송했습니다. 이메일을 확인해주세요.'),
+            backgroundColor: Theme.of(context).colorScheme.primary,
           ),
         );
         context.go('/login');
@@ -49,16 +49,16 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(error.message),
-            backgroundColor: Colors.red,
+            backgroundColor: Theme.of(context).colorScheme.error,
           ),
         );
       }
     } catch (error) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('오류가 발생했습니다. 다시 시도해주세요.'),
-            backgroundColor: Colors.red,
+          SnackBar(
+            content: const Text('오류가 발생했습니다. 다시 시도해주세요.'),
+            backgroundColor: Theme.of(context).colorScheme.error,
           ),
         );
       }
@@ -129,7 +129,6 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
                           width: 20,
                           child: CircularProgressIndicator(
                             strokeWidth: 2,
-                            color: Colors.white,
                           ),
                         )
                       : const Text('비밀번호 재설정 이메일 발송'),

@@ -189,7 +189,7 @@ class _EmployeeAddScreenState extends ConsumerState<EmployeeAddScreen> {
                   onTap: _pickImage,
                   child: CircleAvatar(
                     radius: 60,
-                    backgroundColor: Colors.grey[300],
+                    backgroundColor: Theme.of(context).colorScheme.surfaceVariant,
                     backgroundImage: _imageFile != null
                         ? (kIsWeb
                             ? NetworkImage(_imageFile!.path)
@@ -197,10 +197,10 @@ class _EmployeeAddScreenState extends ConsumerState<EmployeeAddScreen> {
                             as ImageProvider
                         : null,
                     child: _imageFile == null
-                        ? const Icon(
+                        ? Icon(
                             Icons.camera_alt,
                             size: 40,
-                            color: Colors.white,
+                            color: Theme.of(context).colorScheme.onSurfaceVariant,
                           )
                         : null,
                   ),
@@ -336,7 +336,6 @@ class _EmployeeAddScreenState extends ConsumerState<EmployeeAddScreen> {
                         width: 20,
                         child: CircularProgressIndicator(
                           strokeWidth: 2,
-                          valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
                         ),
                       )
                     : const Text('등록'),

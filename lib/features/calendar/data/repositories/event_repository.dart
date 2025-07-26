@@ -133,7 +133,10 @@ class EventRepository {
         .stream(primaryKey: ['id'])
         .eq('user_id', userId)
         .order('start_time', ascending: true)
-        .map((data) => data.map((json) => EventModel.fromJson(json)).toList());
+        .map((data) {
+          print('Event stream update: ${data.length} events'); // Debug log
+          return data.map((json) => EventModel.fromJson(json)).toList();
+        });
   }
 
   // Stream events for a specific date range
@@ -164,6 +167,7 @@ class EventRepository {
             return aStart.compareTo(bStart);
           });
           
+          print('Date range stream update: ${filteredData.length} events for range $start - $end'); // Debug log
           return filteredData.map((json) => EventModel.fromJson(json)).toList();
         });
   }

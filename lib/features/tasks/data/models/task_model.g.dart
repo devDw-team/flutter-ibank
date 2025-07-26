@@ -10,6 +10,7 @@ _$TaskModelImpl _$$TaskModelImplFromJson(Map<String, dynamic> json) =>
     _$TaskModelImpl(
       id: json['id'] as String,
       userId: json['user_id'] as String,
+      projectId: json['project_id'] as String?,
       title: json['title'] as String,
       description: json['description'] as String?,
       status: $enumDecodeNullable(_$TaskStatusEnumMap, json['status']) ??
@@ -32,6 +33,7 @@ Map<String, dynamic> _$$TaskModelImplToJson(_$TaskModelImpl instance) =>
     <String, dynamic>{
       'id': instance.id,
       'user_id': instance.userId,
+      'project_id': instance.projectId,
       'title': instance.title,
       'description': instance.description,
       'status': _$TaskStatusEnumMap[instance.status]!,

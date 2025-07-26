@@ -180,9 +180,9 @@ class _EmployeeEditScreenState extends ConsumerState<EmployeeEditScreen> {
         ref.invalidate(employeesListProvider);
         
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('임직원 정보가 수정되었습니다.'),
-            backgroundColor: Colors.green,
+          SnackBar(
+            content: const Text('임직원 정보가 수정되었습니다.'),
+            backgroundColor: Theme.of(context).colorScheme.primary,
           ),
         );
         context.pop();
@@ -192,7 +192,7 @@ class _EmployeeEditScreenState extends ConsumerState<EmployeeEditScreen> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('오류가 발생했습니다: $e'),
-            backgroundColor: Colors.red,
+            backgroundColor: Theme.of(context).colorScheme.error,
           ),
         );
       }
@@ -282,10 +282,10 @@ class _EmployeeEditScreenState extends ConsumerState<EmployeeEditScreen> {
                               ? Text(
                                   employee.name?.substring(0, 1).toUpperCase() ?? 
                                   employee.email.substring(0, 1).toUpperCase(),
-                                  style: const TextStyle(
+                                  style: TextStyle(
                                     fontSize: 36,
                                     fontWeight: FontWeight.bold,
-                                    color: Colors.white,
+                                    color: Theme.of(context).colorScheme.onPrimary,
                                   ),
                                 )
                               : null,
@@ -296,7 +296,7 @@ class _EmployeeEditScreenState extends ConsumerState<EmployeeEditScreen> {
                           child: CircleAvatar(
                             backgroundColor: AppColors.primary,
                             child: IconButton(
-                              icon: const Icon(Icons.camera_alt, color: Colors.white),
+                              icon: Icon(Icons.camera_alt, color: Theme.of(context).colorScheme.onPrimary),
                               onPressed: _pickImage,
                             ),
                           ),

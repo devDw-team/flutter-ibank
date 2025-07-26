@@ -20,10 +20,8 @@ class CalendarScreen extends ConsumerWidget {
     final calendarActions = ref.watch(calendarActionsProvider);
 
     return Scaffold(
-      backgroundColor: Colors.grey[50],
       appBar: AppBar(
         title: const Text('일정'),
-        backgroundColor: Colors.white,
         elevation: 0,
         actions: [
           // View type selector

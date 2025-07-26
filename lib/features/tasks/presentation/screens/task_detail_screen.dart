@@ -100,9 +100,9 @@ class _TaskDetailScreenState extends ConsumerState<TaskDetailScreen> {
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('할일이 수정되었습니다.'),
-            backgroundColor: Colors.green,
+          SnackBar(
+            content: const Text('할일이 수정되었습니다.'),
+            backgroundColor: Theme.of(context).colorScheme.primary,
           ),
         );
         context.pop();
@@ -112,7 +112,7 @@ class _TaskDetailScreenState extends ConsumerState<TaskDetailScreen> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('오류가 발생했습니다: $e'),
-            backgroundColor: Colors.red,
+            backgroundColor: Theme.of(context).colorScheme.error,
           ),
         );
       }
@@ -139,7 +139,7 @@ class _TaskDetailScreenState extends ConsumerState<TaskDetailScreen> {
           TextButton(
             onPressed: () => Navigator.of(context).pop(true),
             style: TextButton.styleFrom(
-              foregroundColor: Colors.red,
+              foregroundColor: Theme.of(context).colorScheme.error,
             ),
             child: const Text('삭제'),
           ),
@@ -158,9 +158,9 @@ class _TaskDetailScreenState extends ConsumerState<TaskDetailScreen> {
 
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('할일이 삭제되었습니다.'),
-              backgroundColor: Colors.green,
+            SnackBar(
+              content: const Text('할일이 삭제되었습니다.'),
+              backgroundColor: Theme.of(context).colorScheme.primary,
             ),
           );
           context.pop();
@@ -170,7 +170,7 @@ class _TaskDetailScreenState extends ConsumerState<TaskDetailScreen> {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text('오류가 발생했습니다: $e'),
-              backgroundColor: Colors.red,
+              backgroundColor: Theme.of(context).colorScheme.error,
             ),
           );
         }
@@ -198,14 +198,12 @@ class _TaskDetailScreenState extends ConsumerState<TaskDetailScreen> {
     }
 
     return Scaffold(
-      backgroundColor: Colors.grey[50],
       appBar: AppBar(
         title: const Text('할일 상세'),
         elevation: 0,
-        backgroundColor: Colors.white,
         actions: [
           IconButton(
-            icon: const Icon(Icons.delete_outline, color: Colors.red),
+            icon: Icon(Icons.delete_outline, color: Theme.of(context).colorScheme.error),
             onPressed: _isLoading ? null : _deleteTask,
           ),
         ],
@@ -223,7 +221,7 @@ class _TaskDetailScreenState extends ConsumerState<TaskDetailScreen> {
                   elevation: 0,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12),
-                    side: BorderSide(color: Colors.grey[300]!),
+                    side: BorderSide(color: Theme.of(context).dividerColor),
                   ),
                   child: Padding(
                     padding: const EdgeInsets.all(16),
@@ -241,10 +239,10 @@ class _TaskDetailScreenState extends ConsumerState<TaskDetailScreen> {
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
-                            const Text(
+                            Text(
                               ' *',
                               style: TextStyle(
-                                color: Colors.red,
+                                color: Theme.of(context).colorScheme.error,
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
@@ -256,7 +254,7 @@ class _TaskDetailScreenState extends ConsumerState<TaskDetailScreen> {
                           decoration: InputDecoration(
                             hintText: '할일의 제목을 입력하세요',
                             filled: true,
-                            fillColor: Colors.grey[100],
+                            fillColor: Theme.of(context).colorScheme.surfaceVariant.withValues(alpha: 0.5),
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(8),
                               borderSide: BorderSide.none,
@@ -284,7 +282,7 @@ class _TaskDetailScreenState extends ConsumerState<TaskDetailScreen> {
                   elevation: 0,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12),
-                    side: BorderSide(color: Colors.grey[300]!),
+                    side: BorderSide(color: Theme.of(context).dividerColor),
                   ),
                   child: Padding(
                     padding: const EdgeInsets.all(16),
@@ -311,7 +309,7 @@ class _TaskDetailScreenState extends ConsumerState<TaskDetailScreen> {
                           decoration: InputDecoration(
                             hintText: '할일에 대한 상세 설명을 입력하세요',
                             filled: true,
-                            fillColor: Colors.grey[100],
+                            fillColor: Theme.of(context).colorScheme.surfaceVariant.withValues(alpha: 0.5),
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(8),
                               borderSide: BorderSide.none,
@@ -330,7 +328,7 @@ class _TaskDetailScreenState extends ConsumerState<TaskDetailScreen> {
                   elevation: 0,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12),
-                    side: BorderSide(color: Colors.grey[300]!),
+                    side: BorderSide(color: Theme.of(context).dividerColor),
                   ),
                   child: Padding(
                     padding: const EdgeInsets.all(16),
@@ -354,7 +352,7 @@ class _TaskDetailScreenState extends ConsumerState<TaskDetailScreen> {
                         const SizedBox(height: 12),
                         Container(
                           decoration: BoxDecoration(
-                            color: Colors.grey[100],
+                            color: Theme.of(context).colorScheme.surfaceVariant.withValues(alpha: 0.5),
                             borderRadius: BorderRadius.circular(8),
                           ),
                           child: Row(
@@ -381,7 +379,7 @@ class _TaskDetailScreenState extends ConsumerState<TaskDetailScreen> {
                                         Icon(
                                           _getPriorityIcon(priority),
                                           size: 16,
-                                          color: isSelected ? Colors.white : Colors.grey[600],
+                                          color: isSelected ? Theme.of(context).colorScheme.onPrimary : Theme.of(context).colorScheme.onSurfaceVariant,
                                         ),
                                         const SizedBox(width: 4),
                                         Text(
@@ -389,7 +387,7 @@ class _TaskDetailScreenState extends ConsumerState<TaskDetailScreen> {
                                           style: TextStyle(
                                             fontSize: 14,
                                             fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
-                                            color: isSelected ? Colors.white : Colors.grey[600],
+                                            color: isSelected ? Theme.of(context).colorScheme.onPrimary : Theme.of(context).colorScheme.onSurfaceVariant,
                                           ),
                                         ),
                                       ],
@@ -420,7 +418,7 @@ class _TaskDetailScreenState extends ConsumerState<TaskDetailScreen> {
                         Container(
                           padding: const EdgeInsets.symmetric(horizontal: 16),
                           decoration: BoxDecoration(
-                            color: Colors.grey[100],
+                            color: Theme.of(context).colorScheme.surfaceVariant.withValues(alpha: 0.5),
                             borderRadius: BorderRadius.circular(8),
                           ),
                           child: DropdownButtonHideUnderline(
@@ -479,14 +477,14 @@ class _TaskDetailScreenState extends ConsumerState<TaskDetailScreen> {
                               vertical: 12,
                             ),
                             decoration: BoxDecoration(
-                              color: Colors.grey[100],
+                              color: Theme.of(context).colorScheme.surfaceVariant.withValues(alpha: 0.5),
                               borderRadius: BorderRadius.circular(8),
                             ),
                             child: Row(
                               children: [
                                 Icon(
                                   Icons.calendar_month,
-                                  color: Colors.grey[600],
+                                  color: Theme.of(context).colorScheme.onSurfaceVariant,
                                   size: 20,
                                 ),
                                 const SizedBox(width: 12),
@@ -496,8 +494,8 @@ class _TaskDetailScreenState extends ConsumerState<TaskDetailScreen> {
                                       : '마감일을 선택하세요',
                                   style: TextStyle(
                                     color: _dueDate != null 
-                                        ? Colors.black87 
-                                        : Colors.grey[600],
+                                        ? Theme.of(context).colorScheme.onSurface 
+                                        : Theme.of(context).colorScheme.onSurfaceVariant,
                                   ),
                                 ),
                                 const Spacer(),
@@ -555,7 +553,6 @@ class _TaskDetailScreenState extends ConsumerState<TaskDetailScreen> {
                                 width: 20,
                                 height: 20,
                                 child: CircularProgressIndicator(
-                                  color: Colors.white,
                                   strokeWidth: 2,
                                 ),
                               )
@@ -576,13 +573,13 @@ class _TaskDetailScreenState extends ConsumerState<TaskDetailScreen> {
   Color _getPriorityColor(TaskPriority priority) {
     switch (priority) {
       case TaskPriority.low:
-        return Colors.green;
+        return AppColors.success;
       case TaskPriority.medium:
-        return Colors.orange;
+        return AppColors.warning;
       case TaskPriority.high:
-        return Colors.red;
+        return AppColors.error;
       case TaskPriority.urgent:
-        return Colors.purple;
+        return Theme.of(context).colorScheme.secondary;
     }
   }
 
@@ -615,13 +612,13 @@ class _TaskDetailScreenState extends ConsumerState<TaskDetailScreen> {
   Color _getStatusColor(TaskStatus status) {
     switch (status) {
       case TaskStatus.pending:
-        return Colors.grey;
+        return AppColors.textSecondary;
       case TaskStatus.inProgress:
-        return Colors.blue;
+        return AppColors.primary;
       case TaskStatus.completed:
-        return Colors.green;
+        return AppColors.success;
       case TaskStatus.cancelled:
-        return Colors.red;
+        return AppColors.error;
     }
   }
 

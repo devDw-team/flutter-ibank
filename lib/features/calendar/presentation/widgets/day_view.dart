@@ -20,7 +20,7 @@ class DayView extends ConsumerWidget {
       children: [
         // Day navigation header
         Container(
-          color: Colors.white,
+          color: Theme.of(context).colorScheme.surface,
           padding: const EdgeInsets.all(16),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -46,7 +46,7 @@ class DayView extends ConsumerWidget {
                     _getDayName(selectedDate.weekday),
                     style: TextStyle(
                       fontSize: 14,
-                      color: selectedDate.weekday == 7 ? Colors.red : Colors.grey[600],
+                      color: selectedDate.weekday == 7 ? Theme.of(context).colorScheme.error : Theme.of(context).colorScheme.onSurfaceVariant,
                     ),
                   ),
                 ],
@@ -71,7 +71,7 @@ class DayView extends ConsumerWidget {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  const Icon(Icons.error_outline, size: 48, color: Colors.red),
+                  Icon(Icons.error_outline, size: 48, color: Theme.of(context).colorScheme.error),
                   const SizedBox(height: 16),
                   Text('오류: $error'),
                   const SizedBox(height: 16),
@@ -91,14 +91,14 @@ class DayView extends ConsumerWidget {
                       Icon(
                         Icons.event_busy,
                         size: 64,
-                        color: Colors.grey[400],
+                        color: Theme.of(context).colorScheme.onSurfaceVariant.withValues(alpha: 0.6),
                       ),
                       const SizedBox(height: 16),
                       Text(
                         '일정이 없습니다',
                         style: TextStyle(
                           fontSize: 18,
-                          color: Colors.grey[600],
+                          color: Theme.of(context).colorScheme.onSurfaceVariant,
                         ),
                       ),
                       const SizedBox(height: 8),
@@ -106,7 +106,7 @@ class DayView extends ConsumerWidget {
                         '새로운 일정을 추가해보세요',
                         style: TextStyle(
                           fontSize: 14,
-                          color: Colors.grey[500],
+                          color: Theme.of(context).colorScheme.onSurfaceVariant.withValues(alpha: 0.8),
                         ),
                       ),
                     ],
@@ -128,14 +128,14 @@ class DayView extends ConsumerWidget {
                     if (allDayEvents.isNotEmpty) ...[
                       Row(
                         children: [
-                          Icon(Icons.wb_sunny, size: 20, color: Colors.grey[700]),
+                          Icon(Icons.wb_sunny, size: 20, color: Theme.of(context).colorScheme.onSurface),
                           const SizedBox(width: 8),
                           Text(
                             '종일 일정',
                             style: TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.bold,
-                              color: Colors.grey[700],
+                              color: Theme.of(context).colorScheme.onSurface,
                             ),
                           ),
                         ],
@@ -149,14 +149,14 @@ class DayView extends ConsumerWidget {
                     if (timedEvents.isNotEmpty) ...[
                       Row(
                         children: [
-                          Icon(Icons.schedule, size: 20, color: Colors.grey[700]),
+                          Icon(Icons.schedule, size: 20, color: Theme.of(context).colorScheme.onSurface),
                           const SizedBox(width: 8),
                           Text(
                             '시간별 일정',
                             style: TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.bold,
-                              color: Colors.grey[700],
+                              color: Theme.of(context).colorScheme.onSurface,
                             ),
                           ),
                         ],
@@ -180,7 +180,7 @@ class DayView extends ConsumerWidget {
       elevation: 0,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(12),
-        side: BorderSide(color: Colors.grey[300]!),
+        side: BorderSide(color: Theme.of(context).dividerColor),
       ),
       child: InkWell(
         onTap: () => context.push('/calendar/detail/${event.id}'),
@@ -239,13 +239,13 @@ class DayView extends ConsumerWidget {
                         ),
                         if (!isAllDay) ...[
                           const SizedBox(width: 16),
-                          Icon(Icons.timer, size: 16, color: Colors.grey[600]),
+                          Icon(Icons.timer, size: 16, color: Theme.of(context).colorScheme.onSurfaceVariant),
                           const SizedBox(width: 4),
                           Text(
                             _formatDuration(event.duration),
                             style: TextStyle(
                               fontSize: 14,
-                              color: Colors.grey[600],
+                              color: Theme.of(context).colorScheme.onSurfaceVariant,
                             ),
                           ),
                         ],
@@ -255,14 +255,14 @@ class DayView extends ConsumerWidget {
                       const SizedBox(height: 4),
                       Row(
                         children: [
-                          Icon(Icons.location_on, size: 16, color: Colors.grey[600]),
+                          Icon(Icons.location_on, size: 16, color: Theme.of(context).colorScheme.onSurfaceVariant),
                           const SizedBox(width: 4),
                           Expanded(
                             child: Text(
                               event.location!,
                               style: TextStyle(
                                 fontSize: 14,
-                                color: Colors.grey[600],
+                                color: Theme.of(context).colorScheme.onSurfaceVariant,
                               ),
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
@@ -277,7 +277,7 @@ class DayView extends ConsumerWidget {
                         event.description!,
                         style: TextStyle(
                           fontSize: 14,
-                          color: Colors.grey[700],
+                          color: Theme.of(context).colorScheme.onSurface,
                         ),
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis,

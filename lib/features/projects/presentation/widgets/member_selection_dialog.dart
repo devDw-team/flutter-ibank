@@ -110,7 +110,7 @@ class _MemberSelectionDialogState extends ConsumerState<MemberSelectionDialog> {
             Container(
               padding: const EdgeInsets.all(20),
               decoration: BoxDecoration(
-                color: AppColors.primary.withOpacity(0.1),
+                color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.1),
                 borderRadius: const BorderRadius.only(
                   topLeft: Radius.circular(16),
                   topRight: Radius.circular(16),
@@ -150,7 +150,7 @@ class _MemberSelectionDialogState extends ConsumerState<MemberSelectionDialog> {
                       hintText: '이름, 이메일, 부서로 검색',
                       prefixIcon: const Icon(Icons.search),
                       filled: true,
-                      fillColor: Colors.white,
+                      fillColor: Theme.of(context).colorScheme.surface,
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(8),
                         borderSide: BorderSide.none,
@@ -169,7 +169,7 @@ class _MemberSelectionDialogState extends ConsumerState<MemberSelectionDialog> {
             if (tempSelectedMembers.isNotEmpty)
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-                color: Colors.grey[100],
+                color: Theme.of(context).colorScheme.surfaceVariant.withValues(alpha: 0.3),
                 child: Row(
                   children: [
                     Container(
@@ -180,8 +180,8 @@ class _MemberSelectionDialogState extends ConsumerState<MemberSelectionDialog> {
                       ),
                       child: Text(
                         '${tempSelectedMembers.length}명 선택됨',
-                        style: const TextStyle(
-                          color: Colors.white,
+                        style: TextStyle(
+                          color: Theme.of(context).colorScheme.onPrimary,
                           fontSize: 12,
                           fontWeight: FontWeight.bold,
                         ),
@@ -201,9 +201,9 @@ class _MemberSelectionDialogState extends ConsumerState<MemberSelectionDialog> {
                                 vertical: 4,
                               ),
                               decoration: BoxDecoration(
-                                color: Colors.white,
+                                color: Theme.of(context).colorScheme.surface,
                                 borderRadius: BorderRadius.circular(16),
-                                border: Border.all(color: Colors.grey[300]!),
+                                border: Border.all(color: Theme.of(context).dividerColor),
                               ),
                               child: Row(
                                 mainAxisSize: MainAxisSize.min,
@@ -222,10 +222,10 @@ class _MemberSelectionDialogState extends ConsumerState<MemberSelectionDialog> {
                                         return newState;
                                       });
                                     },
-                                    child: const Icon(
+                                    child: Icon(
                                       Icons.close,
                                       size: 14,
-                                      color: Colors.grey,
+                                      color: Theme.of(context).colorScheme.onSurfaceVariant,
                                     ),
                                   ),
                                 ],
@@ -251,7 +251,7 @@ class _MemberSelectionDialogState extends ConsumerState<MemberSelectionDialog> {
                               Icon(
                                 Icons.search_off,
                                 size: 64,
-                                color: Colors.grey[400],
+                                color: Theme.of(context).colorScheme.onSurfaceVariant.withValues(alpha: 0.6),
                               ),
                               const SizedBox(height: 16),
                               Text(
@@ -259,7 +259,7 @@ class _MemberSelectionDialogState extends ConsumerState<MemberSelectionDialog> {
                                     ? '추가 가능한 사용자가 없습니다.'
                                     : '검색 결과가 없습니다.',
                                 style: TextStyle(
-                                  color: Colors.grey[600],
+                                  color: Theme.of(context).colorScheme.onSurfaceVariant,
                                   fontSize: 16,
                                 ),
                               ),

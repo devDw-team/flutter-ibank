@@ -25,7 +25,7 @@ class WeekView extends ConsumerWidget {
       children: [
         // Week navigation header
         Container(
-          color: Colors.white,
+          color: Theme.of(context).colorScheme.surface,
           padding: const EdgeInsets.symmetric(vertical: 8),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -59,7 +59,7 @@ class WeekView extends ConsumerWidget {
         const Divider(height: 1),
         // Week days header
         Container(
-          color: Colors.white,
+          color: Theme.of(context).colorScheme.surface,
           height: 60,
           child: Row(
             children: weekDates.map((date) {
@@ -75,7 +75,7 @@ class WeekView extends ConsumerWidget {
                       color: isSelected 
                           ? AppColors.primary 
                           : isToday 
-                              ? AppColors.primary.withOpacity(0.1)
+                              ? AppColors.primary.withValues(alpha: 0.1)
                               : Colors.transparent,
                       borderRadius: BorderRadius.circular(8),
                     ),
@@ -87,10 +87,10 @@ class WeekView extends ConsumerWidget {
                           style: TextStyle(
                             fontSize: 12,
                             color: isSelected 
-                                ? Colors.white 
+                                ? Theme.of(context).colorScheme.onPrimary 
                                 : date.weekday == 7 
-                                    ? Colors.red 
-                                    : Colors.grey[600],
+                                    ? Theme.of(context).colorScheme.error 
+                                    : Theme.of(context).colorScheme.onSurfaceVariant,
                           ),
                         ),
                         const SizedBox(height: 4),
@@ -100,12 +100,12 @@ class WeekView extends ConsumerWidget {
                             fontSize: 16,
                             fontWeight: FontWeight.bold,
                             color: isSelected 
-                                ? Colors.white 
+                                ? Theme.of(context).colorScheme.onPrimary 
                                 : isToday
                                     ? AppColors.primary
                                     : date.weekday == 7 
-                                        ? Colors.red 
-                                        : Colors.black,
+                                        ? Theme.of(context).colorScheme.error 
+                                        : Theme.of(context).colorScheme.onSurface,
                           ),
                         ),
                       ],
@@ -125,7 +125,7 @@ class WeekView extends ConsumerWidget {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  const Icon(Icons.error_outline, size: 48, color: Colors.red),
+                  Icon(Icons.error_outline, size: 48, color: Theme.of(context).colorScheme.error),
                   const SizedBox(height: 16),
                   Text('오류: $error'),
                   const SizedBox(height: 16),
@@ -160,7 +160,7 @@ class WeekView extends ConsumerWidget {
                                   '${hour.toString().padLeft(2, '0')}:00',
                                   style: TextStyle(
                                     fontSize: 12,
-                                    color: Colors.grey[600],
+                                    color: Theme.of(context).colorScheme.onSurfaceVariant,
                                   ),
                                 ),
                               );
@@ -175,7 +175,7 @@ class WeekView extends ConsumerWidget {
                           child: Container(
                             decoration: BoxDecoration(
                               border: Border(
-                                left: BorderSide(color: Colors.grey[300]!),
+                                left: BorderSide(color: Theme.of(context).dividerColor),
                               ),
                             ),
                             child: Stack(
@@ -188,7 +188,7 @@ class WeekView extends ConsumerWidget {
                                     right: 0,
                                     child: Container(
                                       height: 1,
-                                      color: Colors.grey[200],
+                                      color: Theme.of(context).dividerColor.withValues(alpha: 0.5),
                                     ),
                                   );
                                 }),
@@ -237,10 +237,10 @@ class WeekView extends ConsumerWidget {
       child: Container(
         padding: const EdgeInsets.all(4),
         decoration: BoxDecoration(
-          color: _getEventColor(event.eventType).withOpacity(0.8),
+          color: _getEventColor(context, event.eventType).withValues(alpha: 0.8),
           borderRadius: BorderRadius.circular(4),
           border: Border.all(
-            color: _getEventColor(event.eventType),
+            color: _getEventColor(context, event.eventType),
             width: 1,
           ),
         ),
@@ -249,10 +249,10 @@ class WeekView extends ConsumerWidget {
           children: [
             Text(
               event.title,
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 12,
                 fontWeight: FontWeight.bold,
-                color: Colors.white,
+                color: Theme.of(context).colorScheme.onPrimary,
               ),
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
@@ -260,9 +260,9 @@ class WeekView extends ConsumerWidget {
             if (event.duration.inMinutes > 60)
               Text(
                 _formatTime(event.startTime),
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 10,
-                  color: Colors.white,
+                  color: Theme.of(context).colorScheme.onPrimary,
                 ),
               ),
           ],
@@ -278,14 +278,14 @@ class WeekView extends ConsumerWidget {
         margin: const EdgeInsets.only(bottom: 2),
         padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
         decoration: BoxDecoration(
-          color: _getEventColor(event.eventType),
+          color: _getEventColor(context, event.eventType),
           borderRadius: BorderRadius.circular(4),
         ),
         child: Text(
           event.title,
-          style: const TextStyle(
+          style: TextStyle(
             fontSize: 11,
-            color: Colors.white,
+            color: Theme.of(context).colorScheme.onPrimary,
             fontWeight: FontWeight.bold,
           ),
           maxLines: 1,
@@ -323,16 +323,16 @@ class WeekView extends ConsumerWidget {
     return a.year == b.year && a.month == b.month && a.day == b.day;
   }
 
-  Color _getEventColor(EventType type) {
+  Color _getEventColor(BuildContext context, EventType type) {
     switch (type) {
       case EventType.personal:
-        return Colors.blue;
+        return AppColors.primary;
       case EventType.team:
-        return Colors.green;
+        return AppColors.success;
       case EventType.company:
-        return Colors.purple;
+        return Theme.of(context).colorScheme.secondary;
       case EventType.meeting:
-        return Colors.orange;
+        return AppColors.warning;
     }
   }
 

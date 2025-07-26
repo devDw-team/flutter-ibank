@@ -23,6 +23,8 @@ mixin _$TaskModel {
   String get id => throw _privateConstructorUsedError;
   @JsonKey(name: 'user_id')
   String get userId => throw _privateConstructorUsedError;
+  @JsonKey(name: 'project_id')
+  String? get projectId => throw _privateConstructorUsedError;
   String get title => throw _privateConstructorUsedError;
   String? get description => throw _privateConstructorUsedError;
   TaskStatus get status => throw _privateConstructorUsedError;
@@ -58,6 +60,7 @@ abstract class $TaskModelCopyWith<$Res> {
   $Res call(
       {String id,
       @JsonKey(name: 'user_id') String userId,
+      @JsonKey(name: 'project_id') String? projectId,
       String title,
       String? description,
       TaskStatus status,
@@ -87,6 +90,7 @@ class _$TaskModelCopyWithImpl<$Res, $Val extends TaskModel>
   $Res call({
     Object? id = null,
     Object? userId = null,
+    Object? projectId = freezed,
     Object? title = null,
     Object? description = freezed,
     Object? status = null,
@@ -107,6 +111,10 @@ class _$TaskModelCopyWithImpl<$Res, $Val extends TaskModel>
           ? _value.userId
           : userId // ignore: cast_nullable_to_non_nullable
               as String,
+      projectId: freezed == projectId
+          ? _value.projectId
+          : projectId // ignore: cast_nullable_to_non_nullable
+              as String?,
       title: null == title
           ? _value.title
           : title // ignore: cast_nullable_to_non_nullable
@@ -162,6 +170,7 @@ abstract class _$$TaskModelImplCopyWith<$Res>
   $Res call(
       {String id,
       @JsonKey(name: 'user_id') String userId,
+      @JsonKey(name: 'project_id') String? projectId,
       String title,
       String? description,
       TaskStatus status,
@@ -189,6 +198,7 @@ class __$$TaskModelImplCopyWithImpl<$Res>
   $Res call({
     Object? id = null,
     Object? userId = null,
+    Object? projectId = freezed,
     Object? title = null,
     Object? description = freezed,
     Object? status = null,
@@ -209,6 +219,10 @@ class __$$TaskModelImplCopyWithImpl<$Res>
           ? _value.userId
           : userId // ignore: cast_nullable_to_non_nullable
               as String,
+      projectId: freezed == projectId
+          ? _value.projectId
+          : projectId // ignore: cast_nullable_to_non_nullable
+              as String?,
       title: null == title
           ? _value.title
           : title // ignore: cast_nullable_to_non_nullable
@@ -259,6 +273,7 @@ class _$TaskModelImpl implements _TaskModel {
   const _$TaskModelImpl(
       {required this.id,
       @JsonKey(name: 'user_id') required this.userId,
+      @JsonKey(name: 'project_id') this.projectId,
       required this.title,
       this.description,
       this.status = TaskStatus.pending,
@@ -278,6 +293,9 @@ class _$TaskModelImpl implements _TaskModel {
   @override
   @JsonKey(name: 'user_id')
   final String userId;
+  @override
+  @JsonKey(name: 'project_id')
+  final String? projectId;
   @override
   final String title;
   @override
@@ -309,7 +327,7 @@ class _$TaskModelImpl implements _TaskModel {
 
   @override
   String toString() {
-    return 'TaskModel(id: $id, userId: $userId, title: $title, description: $description, status: $status, priority: $priority, dueDate: $dueDate, assignedTo: $assignedTo, assignedBy: $assignedBy, completedAt: $completedAt, createdAt: $createdAt, updatedAt: $updatedAt)';
+    return 'TaskModel(id: $id, userId: $userId, projectId: $projectId, title: $title, description: $description, status: $status, priority: $priority, dueDate: $dueDate, assignedTo: $assignedTo, assignedBy: $assignedBy, completedAt: $completedAt, createdAt: $createdAt, updatedAt: $updatedAt)';
   }
 
   @override
@@ -319,6 +337,8 @@ class _$TaskModelImpl implements _TaskModel {
             other is _$TaskModelImpl &&
             (identical(other.id, id) || other.id == id) &&
             (identical(other.userId, userId) || other.userId == userId) &&
+            (identical(other.projectId, projectId) ||
+                other.projectId == projectId) &&
             (identical(other.title, title) || other.title == title) &&
             (identical(other.description, description) ||
                 other.description == description) &&
@@ -344,6 +364,7 @@ class _$TaskModelImpl implements _TaskModel {
       runtimeType,
       id,
       userId,
+      projectId,
       title,
       description,
       status,
@@ -375,6 +396,7 @@ abstract class _TaskModel implements TaskModel {
   const factory _TaskModel(
           {required final String id,
           @JsonKey(name: 'user_id') required final String userId,
+          @JsonKey(name: 'project_id') final String? projectId,
           required final String title,
           final String? description,
           final TaskStatus status,
@@ -395,6 +417,9 @@ abstract class _TaskModel implements TaskModel {
   @override
   @JsonKey(name: 'user_id')
   String get userId;
+  @override
+  @JsonKey(name: 'project_id')
+  String? get projectId;
   @override
   String get title;
   @override

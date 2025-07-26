@@ -59,13 +59,13 @@ class DashboardScreen extends ConsumerWidget {
               }
             },
             itemBuilder: (context) => [
-              const PopupMenuItem<String>(
+              PopupMenuItem<String>(
                 value: 'logout',
                 child: Row(
                   children: [
-                    Icon(Icons.logout, color: Colors.red),
-                    SizedBox(width: 8),
-                    Text('로그아웃', style: TextStyle(color: Colors.red)),
+                    Icon(Icons.logout, color: Theme.of(context).colorScheme.error),
+                    const SizedBox(width: 8),
+                    Text('로그아웃', style: TextStyle(color: Theme.of(context).colorScheme.error)),
                   ],
                 ),
               ),
@@ -134,7 +134,7 @@ class DashboardScreen extends ConsumerWidget {
                 _QuickActionButton(
                   icon: Icons.event,
                   label: '일정 추가',
-                  color: Colors.purple,
+                  color: Theme.of(context).colorScheme.secondary,
                   onTap: () => context.push('/calendar/add'),
                 ),
               ],
@@ -200,7 +200,7 @@ class DashboardScreen extends ConsumerWidget {
               icon: Icons.event,
               label: '예정된 일정',
               value: '$todayEventsCount개',
-              color: Colors.orange,
+              color: Theme.of(context).colorScheme.secondary,
             ),
           ],
         ),
@@ -467,26 +467,26 @@ class _TaskListItem extends StatelessWidget {
   Color _getPriorityColor(TaskPriority priority) {
     switch (priority) {
       case TaskPriority.urgent:
-        return Colors.red;
+        return AppColors.error;
       case TaskPriority.high:
-        return Colors.orange;
+        return AppColors.warning;
       case TaskPriority.medium:
-        return Colors.blue;
+        return AppColors.primary;
       case TaskPriority.low:
-        return Colors.green;
+        return AppColors.success;
     }
   }
 
   Color _getStatusColor(TaskStatus status) {
     switch (status) {
       case TaskStatus.pending:
-        return Colors.grey;
+        return AppColors.textSecondary;
       case TaskStatus.inProgress:
-        return Colors.blue;
+        return AppColors.primary;
       case TaskStatus.completed:
-        return Colors.green;
+        return AppColors.success;
       case TaskStatus.cancelled:
-        return Colors.red;
+        return AppColors.error;
     }
   }
 
@@ -508,13 +508,13 @@ class _TaskListItem extends StatelessWidget {
     final difference = dueDate.difference(now).inDays;
     
     if (difference < 0) {
-      return Colors.red; // 지난 마감일
+      return AppColors.error; // 지난 마감일
     } else if (difference <= 1) {
-      return Colors.orange; // 1일 이내
+      return AppColors.warning; // 1일 이내
     } else if (difference <= 3) {
-      return Colors.amber; // 3일 이내
+      return AppColors.warning; // 3일 이내
     } else {
-      return Colors.grey; // 여유 있음
+      return AppColors.textSecondary; // 여유 있음
     }
   }
 } 

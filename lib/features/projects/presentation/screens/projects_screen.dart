@@ -18,10 +18,8 @@ class ProjectsScreen extends ConsumerWidget {
     final projectActions = ref.watch(projectActionsProvider);
 
     return Scaffold(
-      backgroundColor: Colors.grey[50],
       appBar: AppBar(
         title: const Text('프로젝트'),
-        backgroundColor: Colors.white,
         elevation: 0,
         actions: [
           PopupMenuButton<ProjectStatus?>(
@@ -29,7 +27,7 @@ class ProjectsScreen extends ConsumerWidget {
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
               decoration: BoxDecoration(
                 border: Border.all(
-                  color: selectedFilter != null ? AppColors.primary : Colors.grey[300]!,
+                  color: selectedFilter != null ? AppColors.primary : Theme.of(context).dividerColor,
                 ),
                 borderRadius: BorderRadius.circular(20),
               ),
@@ -39,7 +37,7 @@ class ProjectsScreen extends ConsumerWidget {
                   Icon(
                     Icons.filter_list,
                     size: 20,
-                    color: selectedFilter != null ? AppColors.primary : Colors.grey[600],
+                    color: selectedFilter != null ? AppColors.primary : Theme.of(context).colorScheme.onSurfaceVariant,
                   ),
                   if (selectedFilter != null) ...[
                     const SizedBox(width: 4),
@@ -94,7 +92,7 @@ class ProjectsScreen extends ConsumerWidget {
                   Icon(
                     Icons.folder_off,
                     size: 64,
-                    color: Colors.grey[400],
+                    color: Theme.of(context).colorScheme.onSurfaceVariant.withOpacity(0.6),
                   ),
                   const SizedBox(height: 16),
                   Text(
@@ -103,7 +101,7 @@ class ProjectsScreen extends ConsumerWidget {
                         : '참여 중인 프로젝트가 없습니다',
                     style: TextStyle(
                       fontSize: 16,
-                      color: Colors.grey[600],
+                      color: Theme.of(context).colorScheme.onSurfaceVariant,
                     ),
                   ),
                   const SizedBox(height: 8),
@@ -111,7 +109,7 @@ class ProjectsScreen extends ConsumerWidget {
                     '새로운 프로젝트를 생성해보세요',
                     style: TextStyle(
                       fontSize: 14,
-                      color: Colors.grey[500],
+                      color: Theme.of(context).colorScheme.onSurfaceVariant.withOpacity(0.8),
                     ),
                   ),
                 ],

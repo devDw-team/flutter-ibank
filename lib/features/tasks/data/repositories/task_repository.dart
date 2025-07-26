@@ -150,6 +150,31 @@ class TaskRepository {
     }
   }
 
+  // 특정 프로젝트의 할일 조회
+  Future<List<TaskModel>> getTasksByProject(String projectId) async {
+    try {
+      print('getTasksByProject called with projectId: $projectId');
+      final response = await _supabase
+          .from('tasks')
+          .select('''
+            *,
+            assigned_to_user:users!tasks_assigned_to_fkey(id, name, avatar_url),
+            assigned_by_user:users!tasks_assigned_by_fkey(id, name, avatar_url)
+          ''')
+          .eq('project_id', projectId)
+          .order('created_at', ascending: false);
+
+      print('getTasksByProject response: ${response.length} items');
+      return response.map((json) => TaskModel.fromJson(json)).toList();
+    } on PostgrestException catch (e) {
+      print('getTasksByProject PostgrestException: ${e.message}');
+      throw Exception('Failed to fetch tasks by project');
+    } catch (e) {
+      print('getTasksByProject unexpected error: $e');
+      throw Exception('Failed to fetch tasks by project');
+    }
+  }
+
   // 실시간 할일 변경사항 구독
   Stream<List<TaskModel>> watchTasks() {
     return _supabase

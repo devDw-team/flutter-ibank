@@ -16,6 +16,8 @@ import '../../features/calendar/presentation/screens/event_detail_screen.dart';
 import '../../features/projects/presentation/screens/projects_screen.dart';
 import '../../features/projects/presentation/screens/project_add_screen.dart';
 import '../../features/projects/presentation/screens/project_detail_screen.dart';
+import '../../features/projects/presentation/screens/project_edit_screen.dart';
+import '../../features/projects/presentation/screens/development_log_form_screen.dart';
 import '../../features/profile/presentation/screens/profile_screen.dart';
 import '../../features/profile/presentation/screens/profile_edit_screen.dart';
 import '../../features/profile/presentation/screens/password_change_screen.dart';
@@ -120,6 +122,28 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         builder: (context, state) {
           final projectId = state.pathParameters['id'] ?? '';
           return ProjectDetailScreen(projectId: projectId);
+        },
+      ),
+      GoRoute(
+        path: '/projects/edit/:id',
+        builder: (context, state) {
+          final projectId = state.pathParameters['id'] ?? '';
+          return ProjectEditScreen(projectId: projectId);
+        },
+      ),
+      GoRoute(
+        path: '/projects/:projectId/development-log/add',
+        builder: (context, state) {
+          final projectId = state.pathParameters['projectId'] ?? '';
+          return DevelopmentLogFormScreen(projectId: projectId);
+        },
+      ),
+      GoRoute(
+        path: '/projects/:projectId/development-log/edit/:logId',
+        builder: (context, state) {
+          final projectId = state.pathParameters['projectId'] ?? '';
+          final logId = state.pathParameters['logId'] ?? '';
+          return DevelopmentLogFormScreen(projectId: projectId, logId: logId);
         },
       ),
       GoRoute(

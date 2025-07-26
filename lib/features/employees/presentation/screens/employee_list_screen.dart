@@ -59,7 +59,6 @@ class EmployeeListScreen extends ConsumerWidget {
     final filteredEmployees = ref.watch(filteredEmployeesProvider);
 
     return Scaffold(
-      backgroundColor: Colors.grey[50],
       appBar: AppBar(
         title: const Text('임직원 목록'),
       ),
@@ -68,7 +67,7 @@ class EmployeeListScreen extends ConsumerWidget {
           // Search Bar
           Container(
             padding: const EdgeInsets.all(16),
-            color: Colors.white,
+            color: Theme.of(context).colorScheme.surface,
             child: _SearchBar(),
           ),
           
@@ -76,12 +75,12 @@ class EmployeeListScreen extends ConsumerWidget {
           Container(
             width: double.infinity,
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-            color: Colors.white,
+            color: Theme.of(context).colorScheme.surface,
             child: employeesAsync.when(
               data: (employees) => Text(
                 '총 ${employees.length}명',
                 style: TextStyle(
-                  color: Colors.grey[600],
+                  color: Theme.of(context).colorScheme.onSurfaceVariant,
                   fontSize: 14,
                   fontWeight: FontWeight.w500,
                 ),
@@ -105,14 +104,14 @@ class EmployeeListScreen extends ConsumerWidget {
                         Icon(
                           Icons.people_outline,
                           size: 64,
-                          color: Colors.grey[400],
+                          color: Theme.of(context).colorScheme.onSurfaceVariant,
                         ),
                         const SizedBox(height: 16),
                         Text(
                           '등록된 임직원이 없습니다.',
                           style: TextStyle(
                             fontSize: 16,
-                            color: Colors.grey[600],
+                            color: Theme.of(context).colorScheme.onSurfaceVariant,
                           ),
                         ),
                       ],
@@ -128,14 +127,14 @@ class EmployeeListScreen extends ConsumerWidget {
                         Icon(
                           Icons.search_off,
                           size: 64,
-                          color: Colors.grey[400],
+                          color: Theme.of(context).colorScheme.onSurfaceVariant,
                         ),
                         const SizedBox(height: 16),
                         Text(
                           '검색 결과가 없습니다.',
                           style: TextStyle(
                             fontSize: 16,
-                            color: Colors.grey[600],
+                            color: Theme.of(context).colorScheme.onSurfaceVariant,
                           ),
                         ),
                       ],
@@ -159,10 +158,10 @@ class EmployeeListScreen extends ConsumerWidget {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    const Icon(
+                    Icon(
                       Icons.error_outline,
                       size: 48,
-                      color: Colors.red,
+                      color: Theme.of(context).colorScheme.error,
                     ),
                     const SizedBox(height: 16),
                     Text('오류: $error'),
@@ -189,10 +188,10 @@ class _SearchBar extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     return Container(
       decoration: BoxDecoration(
-        color: Colors.grey[100],
+        color: Theme.of(context).colorScheme.surfaceVariant.withValues(alpha: 0.5),
         borderRadius: BorderRadius.circular(12),
         border: Border.all(
-          color: Colors.grey[300]!,
+          color: Theme.of(context).dividerColor,
           width: 1,
         ),
       ),
@@ -202,8 +201,8 @@ class _SearchBar extends ConsumerWidget {
         },
         decoration: InputDecoration(
           hintText: '이름, 이메일, 전화번호, 부서명으로 검색',
-          hintStyle: TextStyle(color: Colors.grey[600], fontSize: 14),
-          prefixIcon: Icon(Icons.search, color: Colors.grey[600]),
+          hintStyle: TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant, fontSize: 14),
+          prefixIcon: Icon(Icons.search, color: Theme.of(context).colorScheme.onSurfaceVariant),
           border: InputBorder.none,
           contentPadding: const EdgeInsets.symmetric(
             horizontal: 16,
@@ -249,11 +248,11 @@ class _ModernEmployeeCard extends ConsumerWidget {
     return Container(
       margin: const EdgeInsets.only(bottom: 16),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: Theme.of(context).colorScheme.surface,
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
+            color: Theme.of(context).colorScheme.shadow.withValues(alpha: 0.05),
             blurRadius: 10,
             offset: const Offset(0, 2),
           ),
@@ -276,7 +275,7 @@ class _ModernEmployeeCard extends ConsumerWidget {
               ScaffoldMessenger.of(context).showSnackBar(
                 const SnackBar(
                   content: Text('자신의 정보만 수정할 수 있습니다.'),
-                  backgroundColor: Colors.orange,
+                  backgroundColor: AppColors.warning,
                 ),
               );
             }
@@ -293,7 +292,7 @@ class _ModernEmployeeCard extends ConsumerWidget {
                     shape: BoxShape.circle,
                     gradient: LinearGradient(
                       colors: [
-                        Theme.of(context).primaryColor.withOpacity(0.8),
+                        Theme.of(context).primaryColor.withValues(alpha: 0.8),
                         Theme.of(context).primaryColor,
                       ],
                       begin: Alignment.topLeft,
@@ -301,7 +300,7 @@ class _ModernEmployeeCard extends ConsumerWidget {
                     ),
                     boxShadow: [
                       BoxShadow(
-                        color: Theme.of(context).primaryColor.withOpacity(0.3),
+                        color: Theme.of(context).primaryColor.withValues(alpha: 0.3),
                         blurRadius: 12,
                         offset: const Offset(0, 4),
                       ),
@@ -331,10 +330,10 @@ class _ModernEmployeeCard extends ConsumerWidget {
                           Expanded(
                             child: Text(
                               employee.name ?? '이름 없음',
-                              style: const TextStyle(
+                              style: TextStyle(
                                 fontSize: 18,
                                 fontWeight: FontWeight.bold,
-                                color: Colors.black87,
+                                color: Theme.of(context).colorScheme.onSurface,
                               ),
                             ),
                           ),
@@ -350,10 +349,10 @@ class _ModernEmployeeCard extends ConsumerWidget {
                                 ),
                                 borderRadius: BorderRadius.circular(20),
                               ),
-                              child: const Text(
+                              child: Text(
                                 '관리자',
                                 style: TextStyle(
-                                  color: Colors.white,
+                                  color: Theme.of(context).colorScheme.onPrimary,
                                   fontSize: 12,
                                   fontWeight: FontWeight.bold,
                                 ),
@@ -393,7 +392,7 @@ class _ModernEmployeeCard extends ConsumerWidget {
                           // Email Icon
                           Container(
                             decoration: BoxDecoration(
-                              color: Colors.blue[50],
+                              color: AppColors.primary.withValues(alpha: 0.1),
                               borderRadius: BorderRadius.circular(8),
                             ),
                             child: Material(
@@ -407,7 +406,7 @@ class _ModernEmployeeCard extends ConsumerWidget {
                                   child: Icon(
                                     Icons.email_outlined,
                                     size: 20,
-                                    color: Colors.blue[700],
+                                    color: AppColors.primary,
                                   ),
                                 ),
                               ),
@@ -419,7 +418,7 @@ class _ModernEmployeeCard extends ConsumerWidget {
                             const SizedBox(width: 8),
                             Container(
                               decoration: BoxDecoration(
-                                color: Colors.green[50],
+                                color: AppColors.success.withValues(alpha: 0.1),
                                 borderRadius: BorderRadius.circular(8),
                               ),
                               child: Material(
@@ -433,7 +432,7 @@ class _ModernEmployeeCard extends ConsumerWidget {
                                     child: Icon(
                                       Icons.phone_outlined,
                                       size: 20,
-                                      color: Colors.green[700],
+                                      color: AppColors.success,
                                     ),
                                   ),
                                 ),
@@ -465,10 +464,10 @@ class _ModernEmployeeCard extends ConsumerWidget {
       child: Text(
         employee.name?.substring(0, 1).toUpperCase() ?? 
         employee.email.substring(0, 1).toUpperCase(),
-        style: const TextStyle(
+        style: TextStyle(
           fontSize: 28,
           fontWeight: FontWeight.bold,
-          color: Colors.white,
+          color: Theme.of(context).colorScheme.onPrimary,
         ),
       ),
     );
@@ -478,10 +477,10 @@ class _ModernEmployeeCard extends ConsumerWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
       decoration: BoxDecoration(
-        color: color.withOpacity(0.1),
+        color: color.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(20),
         border: Border.all(
-          color: color.withOpacity(0.3),
+          color: color.withValues(alpha: 0.3),
           width: 1,
         ),
       ),

@@ -133,9 +133,9 @@ class _EventAddScreenState extends ConsumerState<EventAddScreen> {
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('일정이 등록되었습니다.'),
-            backgroundColor: Colors.green,
+          SnackBar(
+            content: const Text('일정이 등록되었습니다.'),
+            backgroundColor: Theme.of(context).colorScheme.primary,
           ),
         );
         context.pop();
@@ -145,7 +145,7 @@ class _EventAddScreenState extends ConsumerState<EventAddScreen> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('오류가 발생했습니다: $e'),
-            backgroundColor: Colors.red,
+            backgroundColor: Theme.of(context).colorScheme.error,
           ),
         );
       }
@@ -161,11 +161,9 @@ class _EventAddScreenState extends ConsumerState<EventAddScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey[50],
       appBar: AppBar(
         title: const Text('새 일정 등록'),
         elevation: 0,
-        backgroundColor: Colors.white,
       ),
       body: SingleChildScrollView(
         child: Padding(
@@ -180,7 +178,7 @@ class _EventAddScreenState extends ConsumerState<EventAddScreen> {
                   elevation: 0,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12),
-                    side: BorderSide(color: Colors.grey[300]!),
+                    side: BorderSide(color: Theme.of(context).dividerColor),
                   ),
                   child: Padding(
                     padding: const EdgeInsets.all(16),
@@ -198,10 +196,10 @@ class _EventAddScreenState extends ConsumerState<EventAddScreen> {
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
-                            const Text(
+                            Text(
                               ' *',
                               style: TextStyle(
-                                color: Colors.red,
+                                color: Theme.of(context).colorScheme.error,
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
@@ -213,7 +211,7 @@ class _EventAddScreenState extends ConsumerState<EventAddScreen> {
                           decoration: InputDecoration(
                             hintText: '일정 제목을 입력하세요',
                             filled: true,
-                            fillColor: Colors.grey[100],
+                            fillColor: Theme.of(context).colorScheme.surfaceVariant.withValues(alpha: 0.5),
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(8),
                               borderSide: BorderSide.none,
@@ -241,7 +239,7 @@ class _EventAddScreenState extends ConsumerState<EventAddScreen> {
                   elevation: 0,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12),
-                    side: BorderSide(color: Colors.grey[300]!),
+                    side: BorderSide(color: Theme.of(context).dividerColor),
                   ),
                   child: Padding(
                     padding: const EdgeInsets.all(16),
@@ -271,14 +269,14 @@ class _EventAddScreenState extends ConsumerState<EventAddScreen> {
                               vertical: 12,
                             ),
                             decoration: BoxDecoration(
-                              color: Colors.grey[100],
+                              color: Theme.of(context).colorScheme.surfaceVariant.withValues(alpha: 0.5),
                               borderRadius: BorderRadius.circular(8),
                             ),
                             child: Row(
                               children: [
                                 Icon(
                                   Icons.calendar_month,
-                                  color: Colors.grey[600],
+                                  color: Theme.of(context).colorScheme.onSurfaceVariant,
                                   size: 20,
                                 ),
                                 const SizedBox(width: 12),
@@ -316,14 +314,14 @@ class _EventAddScreenState extends ConsumerState<EventAddScreen> {
                                       vertical: 12,
                                     ),
                                     decoration: BoxDecoration(
-                                      color: Colors.grey[100],
+                                      color: Theme.of(context).colorScheme.surfaceVariant.withValues(alpha: 0.5),
                                       borderRadius: BorderRadius.circular(8),
                                     ),
                                     child: Row(
                                       children: [
                                         Icon(
                                           Icons.access_time,
-                                          color: Colors.grey[600],
+                                          color: Theme.of(context).colorScheme.onSurfaceVariant,
                                           size: 20,
                                         ),
                                         const SizedBox(width: 8),
@@ -343,14 +341,14 @@ class _EventAddScreenState extends ConsumerState<EventAddScreen> {
                                       vertical: 12,
                                     ),
                                     decoration: BoxDecoration(
-                                      color: Colors.grey[100],
+                                      color: Theme.of(context).colorScheme.surfaceVariant.withValues(alpha: 0.5),
                                       borderRadius: BorderRadius.circular(8),
                                     ),
                                     child: Row(
                                       children: [
                                         Icon(
                                           Icons.access_time,
-                                          color: Colors.grey[600],
+                                          color: Theme.of(context).colorScheme.onSurfaceVariant,
                                           size: 20,
                                         ),
                                         const SizedBox(width: 8),
@@ -374,7 +372,7 @@ class _EventAddScreenState extends ConsumerState<EventAddScreen> {
                   elevation: 0,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12),
-                    side: BorderSide(color: Colors.grey[300]!),
+                    side: BorderSide(color: Theme.of(context).dividerColor),
                   ),
                   child: Padding(
                     padding: const EdgeInsets.all(16),
@@ -397,7 +395,7 @@ class _EventAddScreenState extends ConsumerState<EventAddScreen> {
                         const SizedBox(height: 12),
                         Container(
                           decoration: BoxDecoration(
-                            color: Colors.grey[100],
+                            color: Theme.of(context).colorScheme.surfaceVariant.withValues(alpha: 0.5),
                             borderRadius: BorderRadius.circular(8),
                           ),
                           child: Row(
@@ -414,7 +412,7 @@ class _EventAddScreenState extends ConsumerState<EventAddScreen> {
                                     padding: const EdgeInsets.symmetric(vertical: 12),
                                     decoration: BoxDecoration(
                                       color: isSelected
-                                          ? _getEventColor(type)
+                                          ? _getEventColor(context, type)
                                           : Colors.transparent,
                                       borderRadius: BorderRadius.circular(8),
                                     ),
@@ -424,7 +422,7 @@ class _EventAddScreenState extends ConsumerState<EventAddScreen> {
                                       style: TextStyle(
                                         fontSize: 14,
                                         fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
-                                        color: isSelected ? Colors.white : Colors.grey[600],
+                                        color: isSelected ? Theme.of(context).colorScheme.onPrimary : Theme.of(context).colorScheme.onSurfaceVariant,
                                       ),
                                     ),
                                   ),
@@ -444,7 +442,7 @@ class _EventAddScreenState extends ConsumerState<EventAddScreen> {
                   elevation: 0,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12),
-                    side: BorderSide(color: Colors.grey[300]!),
+                    side: BorderSide(color: Theme.of(context).dividerColor),
                   ),
                   child: Padding(
                     padding: const EdgeInsets.all(16),
@@ -470,7 +468,7 @@ class _EventAddScreenState extends ConsumerState<EventAddScreen> {
                           decoration: InputDecoration(
                             hintText: '장소를 입력하세요 (선택)',
                             filled: true,
-                            fillColor: Colors.grey[100],
+                            fillColor: Theme.of(context).colorScheme.surfaceVariant.withValues(alpha: 0.5),
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(8),
                               borderSide: BorderSide.none,
@@ -492,7 +490,7 @@ class _EventAddScreenState extends ConsumerState<EventAddScreen> {
                   elevation: 0,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12),
-                    side: BorderSide(color: Colors.grey[300]!),
+                    side: BorderSide(color: Theme.of(context).dividerColor),
                   ),
                   child: Padding(
                     padding: const EdgeInsets.all(16),
@@ -519,7 +517,7 @@ class _EventAddScreenState extends ConsumerState<EventAddScreen> {
                           decoration: InputDecoration(
                             hintText: '일정에 대한 설명을 입력하세요 (선택)',
                             filled: true,
-                            fillColor: Colors.grey[100],
+                            fillColor: Theme.of(context).colorScheme.surfaceVariant.withValues(alpha: 0.5),
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(8),
                               borderSide: BorderSide.none,
@@ -566,7 +564,6 @@ class _EventAddScreenState extends ConsumerState<EventAddScreen> {
                                 width: 20,
                                 height: 20,
                                 child: CircularProgressIndicator(
-                                  color: Colors.white,
                                   strokeWidth: 2,
                                 ),
                               )
@@ -584,16 +581,16 @@ class _EventAddScreenState extends ConsumerState<EventAddScreen> {
     );
   }
 
-  Color _getEventColor(EventType type) {
+  Color _getEventColor(BuildContext context, EventType type) {
     switch (type) {
       case EventType.personal:
-        return Colors.blue;
+        return AppColors.primary;
       case EventType.team:
-        return Colors.green;
+        return AppColors.success;
       case EventType.company:
-        return Colors.purple;
+        return Theme.of(context).colorScheme.secondary;
       case EventType.meeting:
-        return Colors.orange;
+        return AppColors.warning;
     }
   }
 

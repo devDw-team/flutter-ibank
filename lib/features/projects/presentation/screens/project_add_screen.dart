@@ -66,16 +66,16 @@ class _ProjectAddScreenState extends ConsumerState<ProjectAddScreen> {
     }
   }
 
-  Color _getRoleColor(ProjectMemberRole role) {
+  Color _getRoleColor(BuildContext context, ProjectMemberRole role) {
     switch (role) {
       case ProjectMemberRole.owner:
-        return Colors.purple;
+        return Theme.of(context).colorScheme.secondary;
       case ProjectMemberRole.manager:
-        return Colors.blue;
+        return AppColors.primary;
       case ProjectMemberRole.member:
-        return Colors.green;
+        return AppColors.success;
       case ProjectMemberRole.viewer:
-        return Colors.orange;
+        return AppColors.warning;
     }
   }
 
@@ -119,9 +119,9 @@ class _ProjectAddScreenState extends ConsumerState<ProjectAddScreen> {
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('프로젝트가 생성되었습니다.'),
-            backgroundColor: Colors.green,
+          SnackBar(
+            content: const Text('프로젝트가 생성되었습니다.'),
+            backgroundColor: Theme.of(context).colorScheme.primary,
           ),
         );
         context.pop();
@@ -131,7 +131,7 @@ class _ProjectAddScreenState extends ConsumerState<ProjectAddScreen> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('오류가 발생했습니다: $e'),
-            backgroundColor: Colors.red,
+            backgroundColor: Theme.of(context).colorScheme.error,
           ),
         );
       }
@@ -147,11 +147,9 @@ class _ProjectAddScreenState extends ConsumerState<ProjectAddScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey[50],
       appBar: AppBar(
         title: const Text('새 프로젝트'),
         elevation: 0,
-        backgroundColor: Colors.white,
       ),
       body: SingleChildScrollView(
         child: Padding(
@@ -166,7 +164,7 @@ class _ProjectAddScreenState extends ConsumerState<ProjectAddScreen> {
                   elevation: 0,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12),
-                    side: BorderSide(color: Colors.grey[300]!),
+                    side: BorderSide(color: Theme.of(context).dividerColor),
                   ),
                   child: Padding(
                     padding: const EdgeInsets.all(16),
@@ -184,10 +182,10 @@ class _ProjectAddScreenState extends ConsumerState<ProjectAddScreen> {
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
-                            const Text(
+                            Text(
                               ' *',
                               style: TextStyle(
-                                color: Colors.red,
+                                color: Theme.of(context).colorScheme.error,
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
@@ -199,7 +197,7 @@ class _ProjectAddScreenState extends ConsumerState<ProjectAddScreen> {
                           decoration: InputDecoration(
                             hintText: '프로젝트 이름을 입력하세요',
                             filled: true,
-                            fillColor: Colors.grey[100],
+                            fillColor: Theme.of(context).colorScheme.surfaceVariant.withValues(alpha: 0.5),
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(8),
                               borderSide: BorderSide.none,
@@ -227,7 +225,7 @@ class _ProjectAddScreenState extends ConsumerState<ProjectAddScreen> {
                   elevation: 0,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12),
-                    side: BorderSide(color: Colors.grey[300]!),
+                    side: BorderSide(color: Theme.of(context).dividerColor),
                   ),
                   child: Padding(
                     padding: const EdgeInsets.all(16),
@@ -254,7 +252,7 @@ class _ProjectAddScreenState extends ConsumerState<ProjectAddScreen> {
                           decoration: InputDecoration(
                             hintText: '프로젝트에 대한 설명을 입력하세요',
                             filled: true,
-                            fillColor: Colors.grey[100],
+                            fillColor: Theme.of(context).colorScheme.surfaceVariant.withValues(alpha: 0.5),
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(8),
                               borderSide: BorderSide.none,
@@ -273,7 +271,7 @@ class _ProjectAddScreenState extends ConsumerState<ProjectAddScreen> {
                   elevation: 0,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12),
-                    side: BorderSide(color: Colors.grey[300]!),
+                    side: BorderSide(color: Theme.of(context).dividerColor),
                   ),
                   child: Padding(
                     padding: const EdgeInsets.all(16),
@@ -296,7 +294,7 @@ class _ProjectAddScreenState extends ConsumerState<ProjectAddScreen> {
                         const SizedBox(height: 12),
                         Container(
                           decoration: BoxDecoration(
-                            color: Colors.grey[100],
+                            color: Theme.of(context).colorScheme.surfaceVariant.withValues(alpha: 0.5),
                             borderRadius: BorderRadius.circular(8),
                           ),
                           child: GridView.count(
@@ -319,7 +317,7 @@ class _ProjectAddScreenState extends ConsumerState<ProjectAddScreen> {
                                   decoration: BoxDecoration(
                                     color: isSelected 
                                         ? status.color
-                                        : Colors.white,
+                                        : Theme.of(context).colorScheme.surface,
                                     borderRadius: BorderRadius.circular(8),
                                     border: Border.all(
                                       color: isSelected 
@@ -333,7 +331,7 @@ class _ProjectAddScreenState extends ConsumerState<ProjectAddScreen> {
                                     style: TextStyle(
                                       fontSize: 14,
                                       fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
-                                      color: isSelected ? Colors.white : Colors.grey[700],
+                                      color: isSelected ? Theme.of(context).colorScheme.onPrimary : Theme.of(context).colorScheme.onSurfaceVariant,
                                     ),
                                   ),
                                 ),
@@ -352,7 +350,7 @@ class _ProjectAddScreenState extends ConsumerState<ProjectAddScreen> {
                   elevation: 0,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12),
-                    side: BorderSide(color: Colors.grey[300]!),
+                    side: BorderSide(color: Theme.of(context).dividerColor),
                   ),
                   child: Padding(
                     padding: const EdgeInsets.all(16),
@@ -384,14 +382,14 @@ class _ProjectAddScreenState extends ConsumerState<ProjectAddScreen> {
                                     vertical: 12,
                                   ),
                                   decoration: BoxDecoration(
-                                    color: Colors.grey[100],
+                                    color: Theme.of(context).colorScheme.surfaceVariant.withValues(alpha: 0.5),
                                     borderRadius: BorderRadius.circular(8),
                                   ),
                                   child: Row(
                                     children: [
                                       Icon(
                                         Icons.calendar_month,
-                                        color: Colors.grey[600],
+                                        color: Theme.of(context).colorScheme.onSurfaceVariant,
                                         size: 20,
                                       ),
                                       const SizedBox(width: 8),
@@ -401,8 +399,8 @@ class _ProjectAddScreenState extends ConsumerState<ProjectAddScreen> {
                                             : '시작일',
                                         style: TextStyle(
                                           color: _startDate != null 
-                                              ? Colors.black87 
-                                              : Colors.grey[600],
+                                              ? Theme.of(context).colorScheme.onSurface 
+                                              : Theme.of(context).colorScheme.onSurfaceVariant,
                                         ),
                                       ),
                                     ],
@@ -423,14 +421,14 @@ class _ProjectAddScreenState extends ConsumerState<ProjectAddScreen> {
                                     vertical: 12,
                                   ),
                                   decoration: BoxDecoration(
-                                    color: Colors.grey[100],
+                                    color: Theme.of(context).colorScheme.surfaceVariant.withValues(alpha: 0.5),
                                     borderRadius: BorderRadius.circular(8),
                                   ),
                                   child: Row(
                                     children: [
                                       Icon(
                                         Icons.calendar_month,
-                                        color: Colors.grey[600],
+                                        color: Theme.of(context).colorScheme.onSurfaceVariant,
                                         size: 20,
                                       ),
                                       const SizedBox(width: 8),
@@ -440,8 +438,8 @@ class _ProjectAddScreenState extends ConsumerState<ProjectAddScreen> {
                                             : '종료일',
                                         style: TextStyle(
                                           color: _endDate != null 
-                                              ? Colors.black87 
-                                              : Colors.grey[600],
+                                              ? Theme.of(context).colorScheme.onSurface 
+                                              : Theme.of(context).colorScheme.onSurfaceVariant,
                                         ),
                                       ),
                                     ],
@@ -462,7 +460,7 @@ class _ProjectAddScreenState extends ConsumerState<ProjectAddScreen> {
                   elevation: 0,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12),
-                    side: BorderSide(color: Colors.grey[300]!),
+                    side: BorderSide(color: Theme.of(context).dividerColor),
                   ),
                   child: Padding(
                     padding: const EdgeInsets.all(16),
@@ -501,7 +499,7 @@ class _ProjectAddScreenState extends ConsumerState<ProjectAddScreen> {
                           const SizedBox(height: 12),
                           Container(
                             decoration: BoxDecoration(
-                              color: Colors.grey[100],
+                              color: Theme.of(context).colorScheme.surfaceVariant.withValues(alpha: 0.5),
                               borderRadius: BorderRadius.circular(8),
                             ),
                             child: ListView.separated(
@@ -510,7 +508,7 @@ class _ProjectAddScreenState extends ConsumerState<ProjectAddScreen> {
                               itemCount: _selectedMembers.length,
                               separatorBuilder: (context, index) => Divider(
                                 height: 1,
-                                color: Colors.grey[300],
+                                color: Theme.of(context).dividerColor,
                               ),
                               itemBuilder: (context, index) {
                                 final entry = _selectedMembers.entries.toList()[index];
@@ -545,7 +543,7 @@ class _ProjectAddScreenState extends ConsumerState<ProjectAddScreen> {
                                           vertical: 6,
                                         ),
                                         decoration: BoxDecoration(
-                                          color: _getRoleColor(role).withOpacity(0.2),
+                                          color: _getRoleColor(context, role).withValues(alpha: 0.2),
                                           borderRadius: BorderRadius.circular(16),
                                         ),
                                         child: DropdownButton<ProjectMemberRole>(
@@ -628,7 +626,6 @@ class _ProjectAddScreenState extends ConsumerState<ProjectAddScreen> {
                                 width: 20,
                                 height: 20,
                                 child: CircularProgressIndicator(
-                                  color: Colors.white,
                                   strokeWidth: 2,
                                 ),
                               )

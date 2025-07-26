@@ -6,6 +6,7 @@ import 'package:intl/intl.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../data/models/project_model.dart';
 import '../providers/project_provider.dart';
+import '../widgets/development_logs_section.dart';
 
 class ProjectDetailScreen extends ConsumerWidget {
   final String projectId;
@@ -22,10 +23,8 @@ class ProjectDetailScreen extends ConsumerWidget {
     final projectActions = ref.watch(projectActionsProvider);
 
     return Scaffold(
-      backgroundColor: Colors.grey[50],
       appBar: AppBar(
         title: const Text('프로젝트 상세'),
-        backgroundColor: Colors.white,
         elevation: 0,
         actions: projectAsync.maybeWhen(
           data: (project) => userRole?.canEdit == true
@@ -48,7 +47,7 @@ class ProjectDetailScreen extends ConsumerWidget {
                               TextButton(
                                 onPressed: () => Navigator.of(context).pop(true),
                                 style: TextButton.styleFrom(
-                                  foregroundColor: Colors.red,
+                                  foregroundColor: Theme.of(context).colorScheme.error,
                                 ),
                                 child: const Text('삭제'),
                               ),
@@ -72,7 +71,7 @@ class ProjectDetailScreen extends ConsumerWidget {
                               ScaffoldMessenger.of(context).showSnackBar(
                                 SnackBar(
                                   content: Text('오류: $e'),
-                                  backgroundColor: Colors.red,
+                                  backgroundColor: Theme.of(context).colorScheme.error,
                                 ),
                               );
                             }
@@ -81,24 +80,24 @@ class ProjectDetailScreen extends ConsumerWidget {
                       }
                     },
                     itemBuilder: (context) => [
-                      const PopupMenuItem(
+                      PopupMenuItem(
                         value: 'edit',
                         child: Row(
                           children: [
-                            Icon(Icons.edit, color: Colors.black54),
+                            Icon(Icons.edit, color: Theme.of(context).colorScheme.onSurfaceVariant),
                             SizedBox(width: 8),
                             Text('수정'),
                           ],
                         ),
                       ),
                       if (userRole?.canDelete == true)
-                        const PopupMenuItem(
+                        PopupMenuItem(
                           value: 'delete',
                           child: Row(
                             children: [
-                              Icon(Icons.delete, color: Colors.red),
+                              Icon(Icons.delete, color: Theme.of(context).colorScheme.error),
                               SizedBox(width: 8),
-                              Text('삭제', style: TextStyle(color: Colors.red)),
+                              Text('삭제', style: TextStyle(color: Theme.of(context).colorScheme.error)),
                             ],
                           ),
                         ),
@@ -120,7 +119,7 @@ class ProjectDetailScreen extends ConsumerWidget {
                 elevation: 0,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12),
-                  side: BorderSide(color: Colors.grey[300]!),
+                  side: BorderSide(color: Theme.of(context).dividerColor),
                 ),
                 child: Padding(
                   padding: const EdgeInsets.all(20),
@@ -144,10 +143,10 @@ class ProjectDetailScreen extends ConsumerWidget {
                               vertical: 8,
                             ),
                             decoration: BoxDecoration(
-                              color: project.status.color.withOpacity(0.1),
+                              color: project.status.color.withValues(alpha: 0.1),
                               borderRadius: BorderRadius.circular(20),
                               border: Border.all(
-                                color: project.status.color.withOpacity(0.3),
+                                color: project.status.color.withValues(alpha: 0.3),
                               ),
                             ),
                             child: Text(
@@ -167,7 +166,7 @@ class ProjectDetailScreen extends ConsumerWidget {
                           project.description!,
                           style: TextStyle(
                             fontSize: 16,
-                            color: Colors.grey[700],
+                            color: Theme.of(context).colorScheme.onSurfaceVariant,
                             height: 1.5,
                           ),
                         ),
@@ -175,18 +174,21 @@ class ProjectDetailScreen extends ConsumerWidget {
                       const SizedBox(height: 24),
                       // Project Details
                       _buildInfoRow(
+                        context: context,
                         icon: Icons.person,
                         label: '소유자',
                         value: project.ownerName ?? '알 수 없음',
                       ),
                       const SizedBox(height: 12),
                       _buildInfoRow(
+                        context: context,
                         icon: Icons.calendar_today,
                         label: '프로젝트 기간',
                         value: _formatDateRange(project.startDate, project.endDate),
                       ),
                       const SizedBox(height: 12),
                       _buildInfoRow(
+                        context: context,
                         icon: Icons.update,
                         label: '마지막 업데이트',
                         value: DateFormat('yyyy.MM.dd HH:mm').format(project.updatedAt),
@@ -196,7 +198,7 @@ class ProjectDetailScreen extends ConsumerWidget {
                           project.startDate != null && 
                           project.endDate != null) ...[
                         const SizedBox(height: 20),
-                        _buildProgressSection(project),
+                        _buildProgressSection(context, project),
                       ],
                     ],
                   ),
@@ -205,12 +207,17 @@ class ProjectDetailScreen extends ConsumerWidget {
               
               const SizedBox(height: 20),
               
+              // Development Logs Section
+              DevelopmentLogsSection(projectId: projectId),
+              
+              const SizedBox(height: 20),
+              
               // Members Section
               Card(
                 elevation: 0,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12),
-                  side: BorderSide(color: Colors.grey[300]!),
+                  side: BorderSide(color: Theme.of(context).dividerColor),
                 ),
                 child: Padding(
                   padding: const EdgeInsets.all(20),
@@ -243,7 +250,7 @@ class ProjectDetailScreen extends ConsumerWidget {
                             child: Text(
                               '프로젝트 멤버가 없습니다',
                               style: TextStyle(
-                                color: Colors.grey[600],
+                                color: Theme.of(context).colorScheme.onSurfaceVariant,
                               ),
                             ),
                           ),
@@ -270,7 +277,7 @@ class ProjectDetailScreen extends ConsumerWidget {
                                     ScaffoldMessenger.of(context).showSnackBar(
                                       SnackBar(
                                         content: Text('오류: $e'),
-                                        backgroundColor: Colors.red,
+                                        backgroundColor: Theme.of(context).colorScheme.error,
                                       ),
                                     );
                                   }
@@ -292,7 +299,7 @@ class ProjectDetailScreen extends ConsumerWidget {
                                         TextButton(
                                           onPressed: () => Navigator.of(context).pop(true),
                                           style: TextButton.styleFrom(
-                                            foregroundColor: Colors.red,
+                                            foregroundColor: Theme.of(context).colorScheme.error,
                                           ),
                                           child: const Text('제거'),
                                         ),
@@ -318,7 +325,7 @@ class ProjectDetailScreen extends ConsumerWidget {
                                         ScaffoldMessenger.of(context).showSnackBar(
                                           SnackBar(
                                             content: Text('오류: $e'),
-                                            backgroundColor: Colors.red,
+                                            backgroundColor: Theme.of(context).colorScheme.error,
                                           ),
                                         );
                                       }
@@ -339,10 +346,10 @@ class ProjectDetailScreen extends ConsumerWidget {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const Icon(
+              Icon(
                 Icons.error_outline,
                 size: 48,
-                color: Colors.red,
+                color: Theme.of(context).colorScheme.error,
               ),
               const SizedBox(height: 16),
               Text('오류: $error'),
@@ -359,18 +366,19 @@ class ProjectDetailScreen extends ConsumerWidget {
   }
 
   Widget _buildInfoRow({
+    required BuildContext context,
     required IconData icon,
     required String label,
     required String value,
   }) {
     return Row(
       children: [
-        Icon(icon, size: 20, color: Colors.grey[600]),
+        Icon(icon, size: 20, color: Theme.of(context).colorScheme.onSurfaceVariant),
         const SizedBox(width: 12),
         Text(
           '$label: ',
           style: TextStyle(
-            color: Colors.grey[600],
+            color: Theme.of(context).colorScheme.onSurfaceVariant,
             fontSize: 14,
           ),
         ),
@@ -400,7 +408,7 @@ class ProjectDetailScreen extends ConsumerWidget {
     return '미정';
   }
 
-  Widget _buildProgressSection(ProjectModel project) {
+  Widget _buildProgressSection(BuildContext context, ProjectModel project) {
     if (project.startDate == null || project.endDate == null) {
       return const SizedBox.shrink();
     }
@@ -421,14 +429,14 @@ class ProjectDetailScreen extends ConsumerWidget {
               '진행률',
               style: TextStyle(
                 fontSize: 14,
-                color: Colors.grey[600],
+                color: Theme.of(context).colorScheme.onSurfaceVariant,
               ),
             ),
             Text(
               '${(progress * 100).toInt()}% (${remainingDays > 0 ? '$remainingDays일 남음' : '기한 초과'})',
               style: TextStyle(
                 fontSize: 14,
-                color: remainingDays > 0 ? Colors.grey[700] : Colors.red,
+                color: remainingDays > 0 ? Theme.of(context).colorScheme.onSurfaceVariant : Theme.of(context).colorScheme.error,
                 fontWeight: FontWeight.w600,
               ),
             ),
@@ -437,12 +445,12 @@ class ProjectDetailScreen extends ConsumerWidget {
         const SizedBox(height: 8),
         LinearProgressIndicator(
           value: progress,
-          backgroundColor: Colors.grey[200],
+          backgroundColor: Theme.of(context).colorScheme.surfaceVariant.withValues(alpha: 0.5),
           valueColor: AlwaysStoppedAnimation<Color>(
             remainingDays < 0 
-                ? Colors.red
+                ? Theme.of(context).colorScheme.error
                 : progress > 0.8 
-                    ? Colors.orange 
+                    ? AppColors.warning 
                     : AppColors.primary,
           ),
           minHeight: 8,
@@ -509,9 +517,9 @@ class ProjectDetailScreen extends ConsumerWidget {
                 final email = emailController.text.trim();
                 if (email.isEmpty) {
                   ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text('이메일을 입력해주세요.'),
-                      backgroundColor: Colors.red,
+                    SnackBar(
+                      content: const Text('이메일을 입력해주세요.'),
+                      backgroundColor: Theme.of(context).colorScheme.error,
                     ),
                   );
                   return;
@@ -578,7 +586,7 @@ class _MemberListItem extends StatelessWidget {
         children: [
           CircleAvatar(
             radius: 20,
-            backgroundColor: AppColors.primary.withOpacity(0.1),
+            backgroundColor: AppColors.primary.withValues(alpha: 0.1),
             child: Text(
               (member.userName ?? member.userEmail ?? 'U')[0].toUpperCase(),
               style: TextStyle(
@@ -603,7 +611,7 @@ class _MemberListItem extends StatelessWidget {
                     member.userEmail!,
                     style: TextStyle(
                       fontSize: 12,
-                      color: Colors.grey[600],
+                      color: Theme.of(context).colorScheme.onSurfaceVariant,
                     ),
                   ),
               ],
@@ -613,14 +621,14 @@ class _MemberListItem extends StatelessWidget {
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
               decoration: BoxDecoration(
-                color: Colors.blue.withOpacity(0.1),
+                color: AppColors.primary.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Text(
                 member.role.displayName,
                 style: const TextStyle(
                   fontSize: 12,
-                  color: Colors.blue,
+                  color: AppColors.primary,
                   fontWeight: FontWeight.w600,
                 ),
               ),
@@ -632,7 +640,7 @@ class _MemberListItem extends StatelessWidget {
               child: Container(
                 padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
                 decoration: BoxDecoration(
-                  color: Colors.grey[100],
+                  color: Theme.of(context).colorScheme.surfaceVariant.withValues(alpha: 0.5),
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Row(
@@ -669,7 +677,7 @@ class _MemberListItem extends StatelessWidget {
             ),
           if (onRemove != null)
             IconButton(
-              icon: const Icon(Icons.remove_circle_outline, color: Colors.red),
+              icon: Icon(Icons.remove_circle_outline, color: Theme.of(context).colorScheme.error),
               onPressed: onRemove,
               iconSize: 20,
             ),

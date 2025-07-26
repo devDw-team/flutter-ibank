@@ -160,7 +160,7 @@ class _TaskFormDialogState extends ConsumerState<TaskFormDialog> {
                         ? DateFormat('yyyy-MM-dd').format(_dueDate!)
                         : '마감일을 선택하세요',
                     style: TextStyle(
-                      color: _dueDate != null ? Colors.black : Colors.grey,
+                      color: _dueDate != null ? Theme.of(context).colorScheme.onSurface : Theme.of(context).colorScheme.onSurfaceVariant,
                     ),
                   ),
                 ),
