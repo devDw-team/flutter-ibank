@@ -17,8 +17,8 @@ class WeekView extends ConsumerWidget {
     final eventsAsync = ref.watch(weekEventsProvider);
 
     // Calculate week dates
-    final weekday = selectedDate.weekday;
-    final startOfWeek = selectedDate.subtract(Duration(days: weekday - 1));
+    final weekday = selectedDate.weekday == 7 ? 0 : selectedDate.weekday;
+    final startOfWeek = selectedDate.subtract(Duration(days: weekday));
     final weekDates = List.generate(7, (i) => startOfWeek.add(Duration(days: i)));
 
     return Column(
@@ -88,7 +88,7 @@ class WeekView extends ConsumerWidget {
                             fontSize: 12,
                             color: isSelected 
                                 ? Theme.of(context).colorScheme.onPrimary 
-                                : date.weekday == 7 
+                                : date.weekday == 7 || date.weekday == 6
                                     ? Theme.of(context).colorScheme.error 
                                     : Theme.of(context).colorScheme.onSurfaceVariant,
                           ),
@@ -103,7 +103,7 @@ class WeekView extends ConsumerWidget {
                                 ? Theme.of(context).colorScheme.onPrimary 
                                 : isToday
                                     ? AppColors.primary
-                                    : date.weekday == 7 
+                                    : date.weekday == 7 || date.weekday == 6
                                         ? Theme.of(context).colorScheme.error 
                                         : Theme.of(context).colorScheme.onSurface,
                           ),
@@ -303,13 +303,13 @@ class WeekView extends ConsumerWidget {
 
   String _getDayName(int weekday) {
     switch (weekday) {
+      case 7: return '일';
       case 1: return '월';
       case 2: return '화';
       case 3: return '수';
       case 4: return '목';
       case 5: return '금';
       case 6: return '토';
-      case 7: return '일';
       default: return '';
     }
   }

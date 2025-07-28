@@ -46,7 +46,7 @@ class DayView extends ConsumerWidget {
                     _getDayName(selectedDate.weekday),
                     style: TextStyle(
                       fontSize: 14,
-                      color: selectedDate.weekday == 7 ? Theme.of(context).colorScheme.error : Theme.of(context).colorScheme.onSurfaceVariant,
+                      color: selectedDate.weekday == 7 || selectedDate.weekday == 6 ? Theme.of(context).colorScheme.error : Theme.of(context).colorScheme.onSurfaceVariant,
                     ),
                   ),
                 ],

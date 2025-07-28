@@ -77,7 +77,7 @@ class _MonthViewState extends ConsumerState<MonthView> {
                 calendarFormat: _calendarFormat,
                 selectedDayPredicate: (day) => isSameDay(selectedDate, day),
                 eventLoader: (day) => _getEventsForDay(day, events),
-                startingDayOfWeek: StartingDayOfWeek.monday,
+                startingDayOfWeek: StartingDayOfWeek.sunday,
                 locale: 'ko_KR',
                 headerStyle: HeaderStyle(
                   formatButtonVisible: false,
