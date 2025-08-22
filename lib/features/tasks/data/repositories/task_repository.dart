@@ -6,7 +6,9 @@ import '../models/task_model.dart';
 const _$TaskStatusEnumMap = {
   TaskStatus.pending: 'pending',
   TaskStatus.inProgress: 'in_progress',
+  TaskStatus.review: 'review',
   TaskStatus.completed: 'completed',
+  TaskStatus.onHold: 'on_hold',
   TaskStatus.cancelled: 'cancelled',
 };
 
@@ -113,11 +115,27 @@ class TaskRepository {
   // 할일 삭제
   Future<void> deleteTask(String taskId) async {
     try {
+      // 먼저 태스크가 존재하는지 확인
+      final checkResponse = await _supabase
+          .from('tasks')
+          .select('id')
+          .eq('id', taskId)
+          .maybeSingle();
+      
+      if (checkResponse == null) {
+        throw Exception('Task not found');
+      }
+      
+      // 태스크 삭제
       await _supabase
           .from('tasks')
           .delete()
           .eq('id', taskId);
+          
     } on PostgrestException catch (e) {
+      if (e.code == 'PGRST116') {
+        throw Exception('Permission denied: You can only delete your own tasks');
+      }
       throw Exception('Failed to delete task: ${e.message}');
     }
   }
@@ -126,7 +144,7 @@ class TaskRepository {
   Future<TaskModel> updateTaskStatus(String taskId, TaskStatus status) async {
     try {
       final updateData = <String, dynamic>{
-        'status': status,
+        'status': _$TaskStatusEnumMap[status],
         'updated_at': DateTime.now().toIso8601String(),
       };
 

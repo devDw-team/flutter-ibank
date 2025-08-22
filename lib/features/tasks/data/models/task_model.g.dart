@@ -49,7 +49,9 @@ Map<String, dynamic> _$$TaskModelImplToJson(_$TaskModelImpl instance) =>
 const _$TaskStatusEnumMap = {
   TaskStatus.pending: 'pending',
   TaskStatus.inProgress: 'in_progress',
+  TaskStatus.review: 'review',
   TaskStatus.completed: 'completed',
+  TaskStatus.onHold: 'on_hold',
   TaskStatus.cancelled: 'cancelled',
 };
 

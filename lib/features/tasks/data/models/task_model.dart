@@ -5,8 +5,10 @@ part 'task_model.g.dart';
 
 enum TaskStatus { 
   @JsonValue('pending') pending, 
-  @JsonValue('in_progress') inProgress, 
+  @JsonValue('in_progress') inProgress,
+  @JsonValue('review') review,
   @JsonValue('completed') completed, 
+  @JsonValue('on_hold') onHold,
   @JsonValue('cancelled') cancelled 
 }
 

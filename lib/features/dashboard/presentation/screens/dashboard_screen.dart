@@ -483,8 +483,12 @@ class _TaskListItem extends StatelessWidget {
         return AppColors.textSecondary;
       case TaskStatus.inProgress:
         return AppColors.primary;
+      case TaskStatus.review:
+        return Colors.deepPurple;
       case TaskStatus.completed:
         return AppColors.success;
+      case TaskStatus.onHold:
+        return AppColors.warning;
       case TaskStatus.cancelled:
         return AppColors.error;
     }
@@ -496,8 +500,12 @@ class _TaskListItem extends StatelessWidget {
         return '대기';
       case TaskStatus.inProgress:
         return '진행중';
+      case TaskStatus.review:
+        return '검수';
       case TaskStatus.completed:
         return '완료';
+      case TaskStatus.onHold:
+        return '보류';
       case TaskStatus.cancelled:
         return '취소';
     }

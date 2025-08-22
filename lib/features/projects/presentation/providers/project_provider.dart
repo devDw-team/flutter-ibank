@@ -26,19 +26,31 @@ final projectDetailProvider = FutureProvider.autoDispose.family<ProjectModel, St
 // Project filter provider
 final projectFilterProvider = StateProvider<ProjectStatus?>((ref) => null);
 
-// Filtered projects provider
+// Filtered projects provider - Fixed version with proper state management
 final filteredProjectsProvider = Provider.autoDispose<List<ProjectModel>>((ref) {
+  // Watch both providers to ensure proper rebuilding
   final projectsAsync = ref.watch(projectsStreamProvider);
   final filter = ref.watch(projectFilterProvider);
   
-  return projectsAsync.when(
-    data: (projects) {
-      if (filter == null) return projects;
-      return projects.where((project) => project.status == filter).toList();
-    },
-    loading: () => [],
-    error: (_, __) => [],
-  );
+  // Handle the AsyncValue properly
+  if (projectsAsync.isLoading) {
+    return <ProjectModel>[];
+  }
+  
+  if (projectsAsync.hasError) {
+    return <ProjectModel>[];
+  }
+  
+  // We know we have data at this point
+  final projects = projectsAsync.value!;
+  
+  // If filter is null, return all projects (전체)
+  if (filter == null) {
+    return projects;
+  }
+  
+  // Filter projects by status
+  return projects.where((project) => project.status == filter).toList();
 });
 
 // Project state
@@ -173,7 +185,16 @@ class ProjectActions {
   }
 
   void setFilter(ProjectStatus? status) {
+    print('setFilter called with: $status');
+    final currentFilter = _ref.read(projectFilterProvider);
+    print('Current filter: $currentFilter');
+    
+    // Force update even if the value is the same
     _ref.read(projectFilterProvider.notifier).state = status;
+    
+    // Verify the update
+    final newFilter = _ref.read(projectFilterProvider);
+    print('Filter after update: $newFilter');
   }
 }
 

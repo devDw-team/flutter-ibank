@@ -520,8 +520,12 @@ class _TaskAddScreenState extends ConsumerState<TaskAddScreen> {
         return AppColors.textSecondary;
       case TaskStatus.inProgress:
         return AppColors.primary;
+      case TaskStatus.review:
+        return Colors.deepPurple;
       case TaskStatus.completed:
         return AppColors.success;
+      case TaskStatus.onHold:
+        return AppColors.warning;
       case TaskStatus.cancelled:
         return AppColors.error;
     }
@@ -533,8 +537,12 @@ class _TaskAddScreenState extends ConsumerState<TaskAddScreen> {
         return Icons.schedule;
       case TaskStatus.inProgress:
         return Icons.play_arrow;
+      case TaskStatus.review:
+        return Icons.fact_check;
       case TaskStatus.completed:
         return Icons.check_circle;
+      case TaskStatus.onHold:
+        return Icons.pause_circle;
       case TaskStatus.cancelled:
         return Icons.cancel;
     }
@@ -546,8 +554,12 @@ class _TaskAddScreenState extends ConsumerState<TaskAddScreen> {
         return '대기';
       case TaskStatus.inProgress:
         return '진행중';
+      case TaskStatus.review:
+        return '검수';
       case TaskStatus.completed:
         return '완료';
+      case TaskStatus.onHold:
+        return '보류';
       case TaskStatus.cancelled:
         return '취소';
     }

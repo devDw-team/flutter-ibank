@@ -189,9 +189,17 @@ class TaskCard extends StatelessWidget {
         color = AppColors.primary;
         icon = Icons.play_arrow;
         break;
+      case TaskStatus.review:
+        color = Colors.deepPurple;
+        icon = Icons.fact_check;
+        break;
       case TaskStatus.completed:
         color = AppColors.success;
         icon = Icons.check_circle;
+        break;
+      case TaskStatus.onHold:
+        color = AppColors.warning;
+        icon = Icons.pause_circle;
         break;
       case TaskStatus.cancelled:
         color = AppColors.error;

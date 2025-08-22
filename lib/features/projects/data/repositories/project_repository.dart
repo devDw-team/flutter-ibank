@@ -16,26 +16,34 @@ class ProjectRepository {
 
   // Get all projects (user is member of)
   Future<List<ProjectModel>> getProjects() async {
-    final userId = _supabase.auth.currentUser?.id;
-    if (userId == null) throw Exception('User not authenticated');
+    try {
+      final userId = _supabase.auth.currentUser?.id;
+      if (userId == null) throw Exception('User not authenticated');
 
-    // Directly query projects - RLS will filter to only projects user can see
-    final projectsResponse = await _supabase
-        .from('projects')
-        .select('''
-          *,
-          owner:users!projects_owner_id_fkey (id, name, email, avatar_url)
-        ''');
+      // Directly query projects - RLS will filter to only projects user can see
+      final projectsResponse = await _supabase
+          .from('projects')
+          .select('''
+            *,
+            owner:users!projects_owner_id_fkey (id, name, email, avatar_url)
+          ''')
+          .order('created_at', ascending: false);
 
-    return (projectsResponse as List).map((projectData) {
-      final ownerData = projectData['owner'] as Map<String, dynamic>?;
-      
-      return ProjectModel.fromJson({
-        ...projectData,
-        'ownerName': ownerData?['name'],
-        'ownerEmail': ownerData?['email'],
-      });
-    }).toList();
+      print('getProjects - fetched ${(projectsResponse as List).length} projects');
+
+      return (projectsResponse as List).map((projectData) {
+        final ownerData = projectData['owner'] as Map<String, dynamic>?;
+        
+        return ProjectModel.fromJson({
+          ...projectData,
+          'ownerName': ownerData?['name'],
+          'ownerEmail': ownerData?['email'],
+        });
+      }).toList();
+    } catch (e) {
+      print('getProjects error: $e');
+      throw Exception('Failed to fetch projects: $e');
+    }
   }
 
   // Get project by ID with members
@@ -97,7 +105,7 @@ class ProjectRepository {
     final projectData = {
       'name': project.name,
       'description': project.description,
-      'status': project.status.name,
+      'status': _getStatusJsonValue(project.status),
       'owner_id': userId,
       'start_date': project.startDate?.toIso8601String(),
       'end_date': project.endDate?.toIso8601String(),
@@ -145,7 +153,7 @@ class ProjectRepository {
     final data = {
       'name': project.name,
       'description': project.description,
-      'status': project.status.name,
+      'status': _getStatusJsonValue(project.status),
       'start_date': project.startDate?.toIso8601String(),
       'end_date': project.endDate?.toIso8601String(),
       'updated_at': DateTime.now().toIso8601String(),
@@ -298,16 +306,45 @@ class ProjectRepository {
 
   // Stream projects
   Stream<List<ProjectModel>> streamProjects() {
-    final userId = _supabase.auth.currentUser?.id;
-    if (userId == null) throw Stream.error('User not authenticated');
+    try {
+      final userId = _supabase.auth.currentUser?.id;
+      if (userId == null) {
+        print('streamProjects - User not authenticated');
+        return Stream.error('User not authenticated');
+      }
 
-    // Use realtime subscription on projects table
-    return _supabase
-        .from('projects')
-        .stream(primaryKey: ['id'])
-        .asyncMap((List<Map<String, dynamic>> data) async {
-          // For each project, fetch complete data including owner info
-          return await getProjects();
-        });
+      print('streamProjects - Starting stream for user: $userId');
+
+      // Use realtime subscription on projects table
+      return _supabase
+          .from('projects')
+          .stream(primaryKey: ['id'])
+          .asyncMap((List<Map<String, dynamic>> data) async {
+            print('streamProjects - Received ${data.length} projects from stream');
+            // For each project, fetch complete data including owner info
+            final projects = await getProjects();
+            print('streamProjects - Returning ${projects.length} projects with details');
+            return projects;
+          });
+    } catch (e) {
+      print('streamProjects error: $e');
+      return Stream.error('Failed to stream projects: $e');
+    }
+  }
+
+  // Helper method to convert ProjectStatus enum to JSON value
+  String _getStatusJsonValue(ProjectStatus status) {
+    switch (status) {
+      case ProjectStatus.planning:
+        return 'planning';
+      case ProjectStatus.active:
+        return 'active';
+      case ProjectStatus.onHold:
+        return 'on_hold';
+      case ProjectStatus.completed:
+        return 'completed';
+      case ProjectStatus.cancelled:
+        return 'cancelled';
+    }
   }
 }

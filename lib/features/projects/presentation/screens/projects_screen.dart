@@ -22,7 +22,7 @@ class ProjectsScreen extends ConsumerWidget {
         title: const Text('프로젝트'),
         elevation: 0,
         actions: [
-          PopupMenuButton<ProjectStatus?>(
+          PopupMenuButton<String>(
             icon: Container(
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
               decoration: BoxDecoration(
@@ -52,17 +52,25 @@ class ProjectsScreen extends ConsumerWidget {
                 ],
               ),
             ),
-            onSelected: (status) {
-              projectActions.setFilter(status);
+            onSelected: (String value) {
+              if (value == 'all') {
+                projectActions.setFilter(null);
+              } else {
+                // Parse the status from string
+                final status = ProjectStatus.values.firstWhere(
+                  (s) => s.toString() == value,
+                );
+                projectActions.setFilter(status);
+              }
             },
             itemBuilder: (context) => [
-              const PopupMenuItem<ProjectStatus?>(
-                value: null,
+              const PopupMenuItem<String>(
+                value: 'all',
                 child: Text('전체'),
               ),
               const PopupMenuDivider(),
-              ...ProjectStatus.values.map((status) => PopupMenuItem<ProjectStatus>(
-                value: status,
+              ...ProjectStatus.values.map((status) => PopupMenuItem<String>(
+                value: status.toString(),
                 child: Row(
                   children: [
                     Container(

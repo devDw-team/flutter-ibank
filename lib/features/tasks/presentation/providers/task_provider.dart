@@ -31,7 +31,9 @@ final groupedTasksProvider = Provider<Map<TaskStatus, List<TaskModel>>>((ref) {
       final Map<TaskStatus, List<TaskModel>> groupedTasks = {
         TaskStatus.pending: [],
         TaskStatus.inProgress: [],
+        TaskStatus.review: [],
         TaskStatus.completed: [],
+        TaskStatus.onHold: [],
         TaskStatus.cancelled: [],
       };
       
@@ -39,18 +41,42 @@ final groupedTasksProvider = Provider<Map<TaskStatus, List<TaskModel>>>((ref) {
         groupedTasks[task.status]?.add(task);
       }
       
+      // 각 상태별로 우선순위 순서로 정렬 (긴급 > 높음 > 보통 > 낮음)
+      final priorityOrder = {
+        TaskPriority.urgent: 0,
+        TaskPriority.high: 1,
+        TaskPriority.medium: 2,
+        TaskPriority.low: 3,
+      };
+      
+      groupedTasks.forEach((status, taskList) {
+        taskList.sort((a, b) {
+          final priorityA = priorityOrder[a.priority] ?? 999;
+          final priorityB = priorityOrder[b.priority] ?? 999;
+          if (priorityA != priorityB) {
+            return priorityA.compareTo(priorityB);
+          }
+          // 같은 우선순위인 경우 생성일 기준 최신순
+          return b.createdAt.compareTo(a.createdAt);
+        });
+      });
+      
       return groupedTasks;
     },
     loading: () => {
       TaskStatus.pending: [],
       TaskStatus.inProgress: [],
+      TaskStatus.review: [],
       TaskStatus.completed: [],
+      TaskStatus.onHold: [],
       TaskStatus.cancelled: [],
     },
     error: (_, __) => {
       TaskStatus.pending: [],
       TaskStatus.inProgress: [],
+      TaskStatus.review: [],
       TaskStatus.completed: [],
+      TaskStatus.onHold: [],
       TaskStatus.cancelled: [],
     },
   );
@@ -117,6 +143,8 @@ class TaskActions {
       await _repository.deleteTask(taskId);
       _ref.invalidate(myTasksProvider);
       _ref.invalidate(allTasksProvider);
+      // 프로젝트별 tasks provider도 invalidate
+      _ref.invalidate(tasksProvider);
     } catch (e) {
       rethrow;
     }

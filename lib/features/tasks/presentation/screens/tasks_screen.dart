@@ -64,10 +64,22 @@ class TasksScreen extends ConsumerWidget {
         icon: Icons.play_arrow,
       ),
       KanbanColumnConfig(
+        status: TaskStatus.review,
+        title: '검수',
+        color: Colors.deepPurple,
+        icon: Icons.fact_check,
+      ),
+      KanbanColumnConfig(
         status: TaskStatus.completed,
         title: '완료',
         color: AppColors.success,
         icon: Icons.check_circle,
+      ),
+      KanbanColumnConfig(
+        status: TaskStatus.onHold,
+        title: '보류',
+        color: AppColors.warning,
+        icon: Icons.pause_circle,
       ),
       KanbanColumnConfig(
         status: TaskStatus.cancelled,
@@ -216,8 +228,12 @@ class TasksScreen extends ConsumerWidget {
         return Icons.inbox_outlined;
       case TaskStatus.inProgress:
         return Icons.engineering_outlined;
+      case TaskStatus.review:
+        return Icons.rate_review_outlined;
       case TaskStatus.completed:
         return Icons.celebration_outlined;
+      case TaskStatus.onHold:
+        return Icons.pause_circle_outlined;
       case TaskStatus.cancelled:
         return Icons.block_outlined;
     }
@@ -229,8 +245,12 @@ class TasksScreen extends ConsumerWidget {
         return '대기 중인 할일이 없습니다';
       case TaskStatus.inProgress:
         return '진행 중인 할일이 없습니다';
+      case TaskStatus.review:
+        return '검수 중인 할일이 없습니다';
       case TaskStatus.completed:
         return '완료된 할일이 없습니다';
+      case TaskStatus.onHold:
+        return '보류 중인 할일이 없습니다';
       case TaskStatus.cancelled:
         return '취소된 할일이 없습니다';
     }
@@ -242,8 +262,12 @@ class TasksScreen extends ConsumerWidget {
         return '새로운 할일을 추가해보세요';
       case TaskStatus.inProgress:
         return '대기 중인 할일을 시작해보세요';
+      case TaskStatus.review:
+        return '검수가 필요한 할일이 여기 표시됩니다';
       case TaskStatus.completed:
         return '훌륭해요! 계속 화이팅!';
+      case TaskStatus.onHold:
+        return '일시적으로 보류된 작업이 여기 표시됩니다';
       case TaskStatus.cancelled:
         return '취소된 작업이 여기 표시됩니다';
     }

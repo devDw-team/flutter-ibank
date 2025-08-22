@@ -287,6 +287,8 @@ class _TaskFormDialogState extends ConsumerState<TaskFormDialog> {
         return '진행중';
       case TaskStatus.completed:
         return '완료';
+      case TaskStatus.onHold:
+        return '보류';
       case TaskStatus.cancelled:
         return '취소';
     }
